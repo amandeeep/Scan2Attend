@@ -59,7 +59,7 @@ const ForgotPasswordPage = () => {
                                         <label className="label">
                                             <span className="label-text text-base font-medium">Email</span>
                                         </label>
-                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={email} onChange={(e) => setEmail(e.target.value) } required />
+                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={email} onChange={(e) => setEmail(e.target.value) }  />
                                     </div>
 
                                     <div className="text-center text-gray-400 font-semibold">or</div>
@@ -96,12 +96,14 @@ const ForgotPasswordPage = () => {
                                         <div className="max-w-md p-8">
                                         {/* Illustration */}
                                             <div className="relative aspect-square max-w-sm mx-auto">
-                                                <img src={img} alt="Language connection illustration" className="w-full h-full" />
+                                                <img src={img} alt="Attendence" className="w-full h-full" />
                                             </div>
                 
                                             <div className="text-center space-y-3 mt-6">
                                             <h2 className="text-xl font-semibold">Forgot Password! Don't Worry</h2>
-                                            
+                                            <p className="text-gray-600 text-sm mt-2 leading-relaxed">
+                                                Just enter your email or phone number and we’ll help you reset your password quickly and securely.
+                                            </p>
                                             </div>
                                         </div>
                                     </div>

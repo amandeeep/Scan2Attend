@@ -3,6 +3,8 @@ import { Croissant, ShipWheel } from 'lucide-react';
 import {Link} from 'react-router-dom'
 
 import img from '../Images/BoyAtten.png'
+import google from '../Images/GoogleLogo.png'
+
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
@@ -10,7 +12,7 @@ const LoginPage = () => {
 
 
     const handleLogin = (e) => {
-        e.prevent.default;
+        e.preventDefault();
     }
   return (
     <div >
@@ -57,7 +59,7 @@ const LoginPage = () => {
                                             <div className=' flex justify-between'>
                                             <span className="label-text text-base font-medium">Password</span>
                                             <span>
-                                                <p><Link to ='/forgotPasswordPage' className="text-xs text-primary hover:underline">Forgot Password</Link></p>
+                                                <p><Link to ='/login/forgot-password' className="text-xs text-primary hover:underline">Forgot Password</Link></p>
                                             </span></div>
                                         </label>
                                         <input type="password" placeholder='••••••••' className=' input input-bordered w-full' value={password} onChange={(e) => setPassword(e.target.value) } required />
@@ -68,8 +70,8 @@ const LoginPage = () => {
 
 
                                     {/* button for login  */}
-
-                                    <button type="submit" className="btn btn-primary w-full" disabled=      {isLogging}>
+                                    <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                                    <button type="submit" className="btn btn-primary flex-1" disabled=      {isLogging}>
                                         {isLogging ? (
                                             <>
                                                 <span className="loading loading-spinner loading-xs"></span>
@@ -79,6 +81,9 @@ const LoginPage = () => {
                                         "Sign In"
                                         )}
                                     </button>
+                                    <button type="button" className="btn flex-1 border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 flex items-center justify-center gap-2 shadow-sm"><img src={google} alt="google" className="w-5 h-5"/>
+                                    </button>
+                                    </div>
 
                                     {/* forwarding to create account */}
 
@@ -106,7 +111,7 @@ const LoginPage = () => {
                         <div className="max-w-md p-8">
                         {/* Illustration */}
                             <div className="relative aspect-square max-w-sm mx-auto">
-                                <img src={img} alt="Language connection illustration" className="w-full h-full" />
+                                <img src={img} alt="Attandence" className="w-full h-full" />
                             </div>
 
                             <div className="text-center space-y-3 mt-6">
