@@ -1,18 +1,22 @@
-import { useState } from 'react'
-import LoginPage from './Pages/LoginPage'
-import ForgotPasswordPage from './Pages/ForgotPasswordPage'
-import NewPasswordPage from './Pages/NewPasswordPage'
-import SignUpPage from './Pages/SignUpPage'
+import { useState, useEffect } from 'react'
+import { useSelector } from "react-redux";
+import LoginPage from './AuthPages/LoginPage'
+import ForgotPasswordPage from './AuthPages/ForgotPasswordPage'
+import NewPasswordPage from './AuthPages/NewPasswordPage'
+import SignUpPage from './AuthPages/SignUpPage'
 import { BrowserRouter,Routes, Route } from 'react-router-dom'
-import OtpPage from './Pages/OtpPage'
+import OtpPage from './AuthPages/OtpPage'
+import { CollegeBody } from './CollegePages/CollegeBody'
 
 function App() {
   
+const theme = useSelector((state) => state.theme.currentTheme);
 
+  
   return (
     <>
     
-      <div className='h-screen' data-theme="forest">
+      <div className='h-screen' data-theme={theme}>
       <Routes>
         <Route path='/login' element={<LoginPage/>}/>
         {/* <Route path='/login/google' element={<LoginPage/>}/> */}
@@ -22,10 +26,16 @@ function App() {
         <Route path='/otp' element={<OtpPage/>}/>
         
       </Routes>
+      
       </div>
 
     
-    </>
+    // </>
+    //////////////////////
+    // <div className='h-screen' data-theme={theme}>
+    // <CollegeBody/>
+    // </div>
+
   )
 }
 
