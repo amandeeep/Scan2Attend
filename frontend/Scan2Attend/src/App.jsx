@@ -18,7 +18,7 @@ const theme = useSelector((state) => state.theme.currentTheme);
     
       <div className='h-screen' data-theme={theme}>
       <Routes>
-        <Route path='/login' element={<LoginPage/>}/>
+        <Route path='/' element={<LoginPage/>}/>
         {/* <Route path='/login/google' element={<LoginPage/>}/> */}
         <Route path='/login/forgot-password' element={<ForgotPasswordPage/>}/>
         <Route path='/login/reset-password' element={<NewPasswordPage/>}/>
@@ -30,9 +30,9 @@ const theme = useSelector((state) => state.theme.currentTheme);
       </div>
 
     
-    // </>
+     </>
     //////////////////////
-    // <div className='h-screen' data-theme={theme}>
+    // <div className='min-h-screen' data-theme={theme}>
     // <CollegeBody/>
     // </div>
 

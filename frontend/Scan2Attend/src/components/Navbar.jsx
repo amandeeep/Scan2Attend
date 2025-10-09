@@ -5,6 +5,7 @@ import { Croissant } from 'lucide-react';
 
 const Navbar = () => {
   return (
+    //fixed top-0 left-0 w-full z-50 add this to make nabar fixed
     <div className="navbar bg-base-100/80 backdrop-blur-md shadow-lg rounded-xl border border-base-200">
     <div className="flex-none">
   <label

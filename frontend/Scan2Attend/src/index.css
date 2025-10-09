@@ -4,5 +4,8 @@
 @tailwind utilities;
 
 body{
-   overflow:  hidden;
+   /* overflow:  hidden; */
+   
+   overflow: hidden;
+   overflow-y: auto;
 }
