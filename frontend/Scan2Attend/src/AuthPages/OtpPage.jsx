@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Croissant } from "lucide-react";
 import img from "../Images/ForgotPassword.png";
+import { Link } from "react-router-dom";
 
 const OtpPage = () => {
   const length = 3; // OTP length
@@ -100,6 +101,7 @@ const OtpPage = () => {
 
             {/* Resend OTP Section */}
             <div className="text-center mt-4">
+              <Link to='/login/reset-password'>@</Link>
               {timeLeft > 0 ? (
                 <p className="text-gray-500 text-sm">
                   Resend OTP in <span className="font-semibold">{timeLeft}s</span>

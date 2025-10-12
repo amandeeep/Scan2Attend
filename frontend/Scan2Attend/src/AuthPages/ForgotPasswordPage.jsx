@@ -2,6 +2,7 @@ import React from 'react'
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
 import { Croissant } from 'lucide-react';
+import {Link} from 'react-router-dom'
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState("");
     const [mobNo, setMobNo] = useState("");
@@ -77,7 +78,7 @@ const ForgotPasswordPage = () => {
                                     </div>
 
                                     {/* this is button with code to make one of the option required */}
-
+                                    <Link to='/otp'>@</Link>
                                     <button type="submit" className="btn btn-primary w-full" >
                                         
                                                 Generate OTP
