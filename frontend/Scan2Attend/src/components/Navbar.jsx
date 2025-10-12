@@ -2,6 +2,7 @@
 import { Palette } from 'lucide-react';
 import ThemeSelector  from './ThemeSelector';
 import { Croissant } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -69,7 +70,11 @@ const Navbar = () => {
           </a>
         </li>
         <li><a className="hover:bg-base-200 rounded-lg transition-colors">Settings</a></li>
-        <li><a className="hover:bg-base-200 rounded-lg transition-colors">Logout</a></li>
+        <li>
+          <Link to= '/'>@
+          <a className="hover:bg-base-200 rounded-lg transition-colors">Logout</a>
+          </Link>
+          </li>
         
 
       </ul>

@@ -24,6 +24,7 @@ const theme = useSelector((state) => state.theme.currentTheme);
         <Route path='/login/reset-password' element={<NewPasswordPage/>}/>
         <Route path='/signup' element={<SignUpPage/>}/>
         <Route path='/otp' element={<OtpPage/>}/>
+        <Route path='/college/dashboard' element={<CollegeBody/>}/>
         
       </Routes>
       

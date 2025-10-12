@@ -2,6 +2,7 @@ import React from 'react'
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
 import { Croissant } from 'lucide-react';
+import {Link} from 'react-router-dom'
 const NewPasswordPage = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -89,7 +90,7 @@ const NewPasswordPage = () => {
                                     </div>
 
                                     {/* this is button  */}
-
+                                    <Link to='/'>@</Link>
                                     <button type="submit" className="btn btn-primary w-full" >
                                         
                                                 Save

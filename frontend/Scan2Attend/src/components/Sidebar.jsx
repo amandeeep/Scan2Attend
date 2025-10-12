@@ -3,7 +3,7 @@ import { HelpingHand, X } from "lucide-react";
 import { Palette } from 'lucide-react';
 import ThemeSelector  from './ThemeSelector';
 import { SquareX, Croissant,House,Settings,HandHelping,LogOut  } from 'lucide-react'; // to close sidebar in future
-
+import { Link } from "react-router-dom";
 const Sidebar = () => {
   return (
     // <div className="drawer z-50">
@@ -71,9 +71,11 @@ const Sidebar = () => {
         <li><a><HandHelping/>Help</a></li>
       </ul>
       <div className="mt-auto font-semibold text-xl">
+        <Link to = '/'>@
         <button className="btn  btn-error w-full gap-2"><LogOut/>    
           Logout
         </button>
+        </Link>
       </div>
       
     </div>
