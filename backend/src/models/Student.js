@@ -55,7 +55,7 @@ const studentSchema = new mongoose.Schema({
     password:{
         type: String,
         minlength: 6,
-        maxlength: 20,
+        // maxlength: 20,
         required: true,
     },
     profilePic:{
@@ -65,6 +65,10 @@ const studentSchema = new mongoose.Schema({
     isOnboard:{
         type: Boolean,
         default: false,
+    },
+    isOtpVerified:{
+        type: Boolean,
+        default: false
     }
 },{timestamps: true});
 

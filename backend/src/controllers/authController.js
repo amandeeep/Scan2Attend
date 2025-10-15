@@ -1,8 +1,11 @@
 import Student from '../models/Student.js'
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-
-
+import {transporter }from '../config/mail.js';
+import {redis} from '../config/redis.js'
+import 'dotenv/config'
+import crypto from 'crypto'
+import bcrypt from 'bcryptjs';
 // signup controller
 
 export async function signup(req,res){
@@ -159,3 +162,170 @@ export async function studentOnboard (req, res) {
     }
 }
 
+
+// send otp
+
+export async  function sendOtp(req, res){
+    try{
+        const {email} = req.body;
+        if(!email) return res.status(400).json({
+            success: false,
+            message: "Email is required"
+        })
+        const user = await Student.findOne({email});
+        if(!user) return res.status(400).json({
+            success: false,
+            message: "Invalid credentials"
+        })
+
+        // cooldown feature to wait for otp
+        
+        const cooldownKey = `otp:cooldown:${email}`;
+        const isCooldown = await redis.get(cooldownKey);
+        if (isCooldown) {
+        return res.status(429).json({
+            success: false,
+            message: 'Please wait before requesting another OTP.',
+        });
+        }
+        const otp = Math.floor(100000 + Math.random()*900000).toString();
+
+        await Promise.all([await redis.del(`otp:${email}`),
+         redis.set(`email:${otp}`, email, {ex:300}),
+         redis.set(`otp:${email}`, otp, {ex: 300}),
+         redis.set(cooldownKey, '1', { ex: 60 }),])
+
+        // send mail
+        await transporter.sendMail({
+            from: `Scan2Attend Admin <${process.env.FAKE_EMAIL}>`,
+            to: user.email,
+            subject: 'Otp from Scan2Attend',
+            html: `<h3>Your OTP: ${otp}</h3><p>Valid for 5 minutes.</p>`
+        })
+        
+        res.status(200).json({
+            success: true,
+            message: "Otp send successfully"
+        })
+    }catch(err){
+        console.error("Send OTP error:", err);
+        res.status(500).json({ message: err.message });
+    }
+}
+
+
+// verify otp
+
+export async function verifyOtp (req,res) {
+    try{
+        const {otp} = req.body;
+        if(!otp) return res.status(400).json({
+            success: false,
+            message: "Please enter otp"
+        })
+
+        const email = await redis.get(`email:${otp}`);
+        const user = await Student.findOne({email});
+
+        if(!user) return res.status(400).json({
+            success: false,
+            message: "Please entr correct otp or correct credentials"
+        })
+
+        const saveOtp = await redis.get(`otp:${email}`);
+        if(saveOtp != otp) return res.status(400).json({
+            success: false,
+            message: "Please enter correct otp"
+        })
+
+        user.isOtpVerified = true;
+        // await user.save()  // Load full doc, modify, validate entire doc, save
+
+
+        // by below method => Update only specified fields in DB
+        await Student.updateOne(
+        { email },
+        { $set: { isOtpVerified: true } }
+        );
+
+        await redis.del(`otp:${email}`);
+        await redis.del(`email:${otp}`);
+
+        
+
+        res.cookie("email",email,{
+            httpOnly: true,
+            maxAge: 5*60*1000,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production"
+        })
+
+        res.status(201).json({
+            success: true,
+            message: "Otp verified successfully",
+            email
+        })
+    }catch(err){
+        console.log("Error in otp verification " + err.message)
+        res.status(500).json({
+            message: "Error in otp verification " + err.message
+        })
+    }
+}
+
+
+export async function resetPassword (req, res) {
+    try{
+    const { enterPassword, confirmPassword} = req.body;
+    const email = req.cookies.email
+    if(!enterPassword || !confirmPassword) return res.status(401).json({
+        success: false,
+        message: "Please enter all fields"
+    })
+    if(enterPassword !== confirmPassword) return res.status(401).json({
+        success: false,
+        message: "Enter and confirm password should be same"
+    })
+    
+    if (!email) {
+    return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+    const user = await Student.findOne({email});
+    if(!user) return res.status(400).json({
+        success: false,
+        message: "Invalid!, no user find"
+    })
+    
+    if(!user.isOtpVerified) return res.status(400).json({
+        success: false,
+        message: "Please verify yourself"
+    })
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(enterPassword, salt);
+
+    await Student.updateOne(
+        {email},
+        {
+            $set: {
+                password: hashPassword,
+                isOtpVerified:false
+            }
+            
+        }
+    )
+
+    
+    res.status(201).json({
+        success: true,
+        message: "Password updated successfully"
+    })
+}catch(err){
+    console.log("Error in reset password "+ err.message);
+    res.status(500).json({
+        success:false,
+        message:"Error in reset password "+err.message
+    })
+}
+
+
+}
