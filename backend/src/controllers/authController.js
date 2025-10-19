@@ -6,6 +6,7 @@ import {redis} from '../config/redis.js'
 import 'dotenv/config'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs';
+
 // signup controller
 
 export async function signup(req,res){
@@ -22,6 +23,12 @@ export async function signup(req,res){
             return  res.status(400).json({
                 success: false,
                 message: "Fill correct email"
+            })
+        }
+        const existingUser = await Student.findOne({email});
+        if(existingUser){
+            return res.status(400).json({
+                message: "User email already exists"
             })
         }
         const idx = Math.floor(Math.random()*100)+1;

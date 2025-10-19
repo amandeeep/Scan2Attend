@@ -1,2 +1,4 @@
 frontend/Scan2Attend/.env
 backend/.env
+frontend/Scan2Attend/node_modules
+backend/node_modules
