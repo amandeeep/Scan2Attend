@@ -1,17 +1,40 @@
 import React, { useState } from 'react'
 import { Croissant, ShipWheel } from 'lucide-react';
-import {Link} from 'react-router-dom'
-
+import {Link, useNavigate} from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import {addUser} from '../store/userSlice';
+import {signup} from '../lib/api';
 import img from '../Images/SignUp.png'
 const SignUpPage = () => {
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("")
-    const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!
+    // const [name, setName] = useState("")
+    // const [email, setEmail] = useState("");
+    // const [password, setPassword] = useState("")
+    // const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!
 
-
-    const handleLogin = (e) => {
+    const [signupData, setSignupData] = useState({
+        fullName: "",
+        email: "",
+        password: ""
+    })
+    const [isPending, setIsPending] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const handleLogin = async (e) => {
         e.preventDefault();
+        try{
+            setIsPending(true);
+            const res = await signup(signupData);
+            dispatch(addUser(res));
+            navigate("/college/dashboard")
+        }
+        catch(err){
+            console.log("Signup failed "+ err.message);
+            setError(err.response?.data?.message || "Signup failed")
+        }
+        finally{
+            setIsPending(false)
+        }
     }
   return (
     <div >
@@ -31,6 +54,11 @@ const SignUpPage = () => {
                     </div>
 
                     {/* error message will come here */}
+                    {error && (
+                        <div className="alert alert-error mb-4">
+                        <span>{error}</span>
+                    </div>
+                    )}
 
                     <div>
                         <form onSubmit={handleLogin}>
@@ -51,14 +79,17 @@ const SignUpPage = () => {
                                         <label className="label">
                                             <span className="label-text text-base font-medium">Full Name</span>
                                         </label>
-                                        <input type="text" placeholder='John Kapoor' className=' input input-bordered w-full' value={name} onChange={(e) => setName(e.target.value) } required />
+                                        <input type="text" placeholder='John Kapoor' className=' input input-bordered w-full' value={signupData.fullName} onChange={(e) => setSignupData({...signupData,fullName:e.target.value}) } required />
                                     </div>
                                      {/* this is email field */}
                                     <div className="form-control w-full space-y-2">
                                         <label className="label">
                                             <span className="label-text text-base font-medium">Email</span>
                                         </label>
-                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={email} onChange={(e) => setEmail(e.target.value) } required />
+                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={signupData.email} onChange={(e) => setSignupData({
+                                            ...signupData,
+                                            email:e.target.value
+                                            }) } required />
                                     </div>
 
                                     {/* this is password field */}
@@ -69,7 +100,7 @@ const SignUpPage = () => {
                                             <span className="label-text text-base font-medium">Password</span>
                                             </div>
                                         </label>
-                                        <input type="password" placeholder='••••••••' className=' input input-bordered w-full' value={password} onChange={(e) => setPassword(e.target.value) } required />
+                                        <input type="password" placeholder='••••••••' className=' input input-bordered w-full' value={signupData.password} onChange={(e) => setSignupData({...signupData, password:e.target.value}) } required />
                                         
                                     </div>
 
@@ -77,7 +108,7 @@ const SignUpPage = () => {
 
                                     <div className='form-control w-full'>
                                         <label className='label cursor-pointer justify-start gap-2'>
-                                          <input type="checkbox" className='checkbox checkbox-sm' />
+                                          <input type="checkbox" className='checkbox checkbox-sm' required/>
                                             <span className='label-text'>I agree to the {""}
                                             <span className="text-primary hover:underline">terms of service</span> and {" "} <span className='text-primary hover:underline'>privacy policy</span>
                                             </span>
@@ -90,8 +121,8 @@ const SignUpPage = () => {
 
                                     {/* button for login  */}
 
-                                    <button type="submit" className="btn btn-primary w-full" disabled=      {isLogging}>
-                                        {isLogging ? (
+                                    <button type="submit" className="btn btn-primary w-full" disabled=      {isPending}>
+                                        {isPending ? (
                                             <>
                                                 <span className="loading loading-spinner loading-xs"></span>
                                                     Signing up...

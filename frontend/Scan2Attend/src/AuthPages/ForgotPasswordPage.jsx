@@ -2,23 +2,37 @@ import React from 'react'
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
 import { Croissant } from 'lucide-react';
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
+import {otpSend} from '../lib/api'
+
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState("");
     const [mobNo, setMobNo] = useState("");
     const [error, setError] = useState('');
+    const [isPending, setIsPending] = useState(false);
 
-    const handleForgot = (e) => {
+    const navigate = useNavigate();
+
+    const handleForgot = async (e) => {
             e.preventDefault();
+            try{
+                setIsPending(true)
+                localStorage.setItem("otpEmail", email);
+                const res = await otpSend({email});
+                navigate("/otp")
+            }catch(err){
+                console.log("error in sending otp "+ err.message);
+                setError(err.response?.data?.message || "Failed to send OTP");
+            }finally{
+                setIsPending(false);
+            }
 
     if (!email.trim() && !mobNo.trim()) {
       setError('Please enter either an email or a phone number.');
       return;
     }
 
-    setError('');
     
-    alert(`Submitted:\nEmail: ${email}\nPhone: ${mobNo}`);
     }
   return (
     <div>
@@ -40,6 +54,12 @@ const ForgotPasswordPage = () => {
                     </div>
 
                     {/* error message will come here */}
+                    {error && (
+                        <div className='alert alert-error mb-4'>
+                            <span>{error}</span>
+                        </div>
+                        
+                    )}
 
 
                     <div>
@@ -60,7 +80,7 @@ const ForgotPasswordPage = () => {
                                         <label className="label">
                                             <span className="label-text text-base font-medium">Email</span>
                                         </label>
-                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={email} onChange={(e) => setEmail(e.target.value) }  />
+                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={email} onChange={(e) => setEmail(e.target.value) } required/>
                                     </div>
 
                                     <div className="text-center text-gray-400 font-semibold">or</div>
@@ -71,17 +91,25 @@ const ForgotPasswordPage = () => {
                                         <label className="label">
                                             <span className="label-text text-base font-medium">Phone number</span>
                                         </label>
-                                        <input type="tel" placeholder='9837XXXX' className='input input-bordered w-full' 
+                                        <input type="tel" placeholder='temporary disabled' className='input input-bordered w-full' 
                                         pattern="[0-9]{10}" maxLength="10" 
-                                        value={mobNo} onChange={(e) => setMobNo(e.target.value)} />
+                                        value={mobNo} onChange={(e) => setMobNo(e.target.value)} disabled/>
 
                                     </div>
 
                                     {/* this is button with code to make one of the option required */}
                                     <Link to='/otp'>@</Link>
-                                    <button type="submit" className="btn btn-primary w-full" >
+                                    <button type="submit" className="btn btn-primary w-full" disabled={isPending}>
+                                        {isPending ? (
+                                            <>
+                                                <span className="loading loading-spinner loading-xs">Sending Otp...</span>
+                                                    
+                                            </>
+                                        ):(
+                                            "Generate OTP"
+                                        )}
                                         
-                                                Generate OTP
+                                                
                                     </button>
                                 </div>
 

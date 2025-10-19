@@ -2,25 +2,40 @@ import React from 'react'
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
 import { Croissant } from 'lucide-react';
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
+import { resetPass } from '../lib/api';
 const NewPasswordPage = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState('');
+    const [isPending, setIsPending] = useState(false);
+    const navigate = useNavigate();
 
-    const handleCreate = (e) => {
+    const handleCreate = async (e) => {
             e.preventDefault();
 
-    if (!newPassword.trim() && !confirmPassword.trim()) {
-      setError('Please enter password.');
-      return;
-    }
-    else if(newPassword != confirmPassword){
-        setError('Confirm password not matches')
-    }
-    else{
-        setError('password corrrect')
-    }
+        if (!newPassword.trim() && !confirmPassword.trim()) {
+        setError('Please enter password.');
+        return;
+        }
+        else if(newPassword != confirmPassword){
+            setError('Confirm password not matches')
+        }
+        try{
+            setIsPending(true);
+            const res = await resetPass({
+                enterPassword: newPassword,
+                confirmPassword,
+            })
+            navigate("/")
+        }
+        catch(err){
+            console.log("Error in updating password "+ err.message);
+            setError(err.response?.data?.message || "Failed to update");
+        }
+        finally{
+            setIsPending(false);
+        }
 
     //setError('Both field should be filled and matches'); // set this to setError('') when backend code comes
     
@@ -49,9 +64,9 @@ const NewPasswordPage = () => {
                     {/* error message will come here */}
                     {error && (
             <div className="alert alert-error mb-4">
-                {/* uncoment this when backend code come */}
-              {/* <span>{error.response.data.message}</span> */}  
-              {error}
+                
+              <span>{error}</span>  
+              
             </div>
           )}
 
@@ -76,7 +91,7 @@ const NewPasswordPage = () => {
                                         <input type="password" placeholder='•••••••••' className=' input input-bordered w-full' value={newPassword} onChange={(e) => setNewPassword(e.target.value) } required />
                                     </div>
 
-                                    <div className="text-center text-gray-400 font-semibold">or</div>
+                                    <div className="text-center text-gray-400 font-semibold">&</div>
 
 
                                     {/* confirm new password field */}
@@ -91,9 +106,14 @@ const NewPasswordPage = () => {
 
                                     {/* this is button  */}
                                     <Link to='/'>@</Link>
-                                    <button type="submit" className="btn btn-primary w-full" >
+                                    <button type="submit" className="btn btn-primary w-full" disabled={isPending}>
+                                        {isPending ? (
+                                            <span className="loading loading-spinner loading-xs">Updating...</span>
+                                        ):(
+                                            "Save"
+                                        )}
                                         
-                                                Save
+                                               
                                     </button>
                                 </div>
 

@@ -7,6 +7,8 @@ import SignUpPage from './AuthPages/SignUpPage'
 import { BrowserRouter,Routes, Route } from 'react-router-dom'
 import OtpPage from './AuthPages/OtpPage'
 import { CollegeBody } from './CollegePages/CollegeBody'
+import StudentBody from './StudentPages/StudentBody';
+import StudentOnboard from './StudentPages/StudentOnboard';
 
 function App() {
   
@@ -15,7 +17,6 @@ const theme = useSelector((state) => state.theme.currentTheme);
   
   return (
     <>
-    
       <div className='h-screen' data-theme={theme}>
       <Routes>
         <Route path='/' element={<LoginPage/>}/>
@@ -29,12 +30,10 @@ const theme = useSelector((state) => state.theme.currentTheme);
       </Routes>
       
       </div>
-
-    
      </>
     //////////////////////
     // <div className='min-h-screen' data-theme={theme}>
-    // <CollegeBody/>
+    // <StudentOnboard/>
     // </div>
 
   )

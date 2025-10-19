@@ -72,7 +72,7 @@ const Navbar = () => {
         <li><a className="hover:bg-base-200 rounded-lg transition-colors">Settings</a></li>
         <li>
           <Link to= '/'>@
-          <a className="hover:bg-base-200 rounded-lg transition-colors">Logout</a>
+          <span className="hover:bg-base-200 rounded-lg transition-colors">Logout</span>
           </Link>
           </li>
         

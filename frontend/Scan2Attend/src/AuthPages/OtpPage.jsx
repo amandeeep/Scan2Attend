@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Croissant } from "lucide-react";
 import img from "../Images/ForgotPassword.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+import { verifyOtp, otpSend } from "../lib/api";
 
 const OtpPage = () => {
-  const length = 3; // OTP length
+  const length = 6; // OTP length
   const [otp, setOtp] = useState(Array(length).fill(""));
   const [error, setError] = useState("");
   const [timeLeft, setTimeLeft] = useState(60); // resend cooldown
   const inputsRef = useRef([]);
-
+  const navigate = useNavigate();
+  const [isPending, setIsPending] = useState(false);
   // Countdown logic
   useEffect(() => {
     if (timeLeft > 0) {
@@ -36,22 +38,44 @@ const OtpPage = () => {
     }
   };
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
     if (enteredOtp.length !== length) {
       setError("Please enter complete OTP.");
       return;
     }
-    // Replace with backend API verification
+    try{
+    setIsPending(true);
+    const res = await verifyOtp({otp:enteredOtp});
+    navigate('/login/reset-password')
     setError("✅ OTP Verified Successfully");
+    }catch(err){
+      console.log("Error in sending otp "+ err.message)
+      setError(err.response?.data?.message || "Invalid Otp");
+    }
+    finally{
+      setIsPending(false);
+    }
   };
 
-  const handleResend = () => {
-    // Call backend API to resend OTP
+  const handleResend = async () => {
     setOtp(Array(length).fill(""));
     setTimeLeft(60);
     setError("📩 New OTP has been sent!");
+    try{
+      const email = localStorage.getItem("otpEmail")
+      const res = await otpSend({email});
+    }catch(err){
+      console.log("error in sending otp "+ err.message);
+      if(err.response?.data?.message === "Email is required"){
+        setError("Go back, enter email again")
+      }
+      else{
+      setError(err.response?.data?.message || "Failed to send OTP");
+      }
+    }
+    
   };
 
   return (
@@ -79,7 +103,7 @@ const OtpPage = () => {
           <form onSubmit={handleVerify} className="space-y-6">
             <h2 className="text-xl font-semibold">Enter OTP</h2>
 
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center gap-2">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -95,8 +119,15 @@ const OtpPage = () => {
             </div>
 
             {/* Verify Button */}
-            <button type="submit" className="btn btn-primary w-full">
-              Verify OTP
+            <button type="submit" className="btn btn-primary w-full" disabled={isPending}>
+              {isPending ? (
+                <>
+                  <span className="loading loading-spinner loading-xs">Verifying Otp</span>
+                </>
+              ):(
+                "Verify OTP"
+              )}
+              
             </button>
 
             {/* Resend OTP Section */}

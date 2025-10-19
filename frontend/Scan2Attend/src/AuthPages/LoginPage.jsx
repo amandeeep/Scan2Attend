@@ -1,19 +1,44 @@
 import React, { useState } from 'react'
 import { Croissant, ShipWheel } from 'lucide-react';
-import {Link} from 'react-router-dom'
-
+import {Link, useNavigate} from 'react-router-dom'
+import { login } from '../lib/api';
 import img from '../Images/BoyAtten.png'
 import google from '../Images/GoogleLogo.png'
+import {useDispatch} from 'react-redux'
+import {addUser} from '../store/userSlice'
 
 const LoginPage = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("")
-    const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!
+    // const [email, setEmail] = useState("");
+    // const [password, setPassword] = useState("")
+    // const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!
 
+    const [loginData, setLoginData] = useState({
+        email:"",
+        password: "",
+        // isLogging: ""
+    })
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [isPending, setIsPending] = useState(null);
+    const [error, setError] = useState(false);
 
-    const handleLogin = (e) => {
-        e.preventDefault();
+    const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+        setIsPending(true);
+        const res = await login(loginData); 
+        dispatch(addUser(res));
+        navigate("/college/dashboard");
+    } catch (error) {
+        console.error("Login failed:", error.message);
+        setError(error.response?.data?.message || "Login failed");
+        
     }
+    finally{
+        setIsPending(false)
+    }
+    };
+
   return (
     <div >
         
@@ -32,6 +57,12 @@ const LoginPage = () => {
                     </div>
 
                     {/* error message will come here */}
+                    {error && (
+                    <div className="alert alert-error mb-4">
+                        <span>{error}</span>
+                    </div>
+                    )}
+
 
                     <div>
                         <form onSubmit={handleLogin}>
@@ -49,7 +80,7 @@ const LoginPage = () => {
                                         <label className="label">
                                             <span className="label-text text-base font-medium">Email</span>
                                         </label>
-                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={email} onChange={(e) => setEmail(e.target.value) } required />
+                                        <input type="email" placeholder='hello@example.com' className=' input input-bordered w-full' value={loginData.email} onChange={(e) => setLoginData({...loginData,email:e.target.value}) } required />
                                     </div>
 
                                     {/* this is password field */}
@@ -62,7 +93,7 @@ const LoginPage = () => {
                                                 <p><Link to ='/login/forgot-password' className="text-xs text-primary hover:underline">Forgot Password</Link></p>
                                             </span></div>
                                         </label>
-                                        <input type="password" placeholder='••••••••' className=' input input-bordered w-full' value={password} onChange={(e) => setPassword(e.target.value) } required />
+                                        <input type="password" placeholder='••••••••' className=' input input-bordered w-full' value={loginData.password} onChange={(e) => setLoginData({...loginData, password:e.target.value}) } required />
                                         
                                     </div>
 
@@ -72,15 +103,16 @@ const LoginPage = () => {
                                     {/* button for login  */}
                                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                         <Link to='/college/dashboard'>@</Link>
-                                    <button type="submit" className="btn btn-primary flex-1" disabled=      {isLogging}>
-                                        {isLogging ? (
+                                    <button type="submit" className="btn btn-primary flex-1" disabled={isPending}>
+                                        {isPending ? (
                                             <>
-                                                <span className="loading loading-spinner loading-xs"></span>
-                                                    Signing in...
+                                                <span className="loading loading-spinner loading-xs">Signing in...</span>
+                                                    
                                             </>
                                                     ) : (
                                         "Sign In"
                                         )}
+                                        
                                     </button>
                                     <button type="button" className="btn flex-1 border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 flex items-center justify-center gap-2 shadow-sm"><img src={google} alt="google" className="w-5 h-5"/>
                                     </button>
