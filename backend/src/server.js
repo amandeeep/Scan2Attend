@@ -5,7 +5,7 @@ import authRoutes from './routes/auth.js'
 import {connectDB} from './lib/db.js'
 import cookieParser from "cookie-parser";
 import cors from 'cors'
-
+import profileRoutes from './routes/profile.js'
 
 
 const PORT = process.env.PORT;
@@ -17,7 +17,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use('/api/auth',authRoutes);
-
+app.use('/api/profile', profileRoutes)
 app.get('/test', (req, res) => {
     res.send("API is working");
 })

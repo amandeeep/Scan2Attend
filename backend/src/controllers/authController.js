@@ -75,7 +75,7 @@ export async function login(req,res){
                 message: "All fields are required"
             })
         }
-        const user = await Student.findOne({email});
+        const user = await Student.findOne({email}).select("-password");
         if(!user) return res.status(401).json({
             success: false,
             message: "Invalid credentials"
@@ -95,9 +95,16 @@ export async function login(req,res){
             secure: process.env.NODE_ENV === "production"
         })
 
+        res.cookie("email",email,{
+            httpOnly: true,
+            maxAge: 7*24*60*60*1000,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production"
+        })        
         res.status(201).json({
             sucess: true,
-            message: "Login successfully"
+            message: "Login successfully",
+            user: user
         })
     }
     catch(err){
@@ -280,6 +287,8 @@ export async function verifyOtp (req,res) {
     }
 }
 
+
+// resetPassword
 
 export async function resetPassword (req, res) {
     try{
