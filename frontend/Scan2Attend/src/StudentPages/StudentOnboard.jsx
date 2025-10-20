@@ -1,25 +1,86 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { CameraIcon, ShuffleIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { studentOnboard, profile } from "../lib/api"
+import { useSelector, useDispatch } from "react-redux";
+import { addUser } from "../store/userSlice";
+import axios from "axios";
 const StudentOnboard = () => {
-    
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [isPending, setIsPending] = useState(false);
+    const [error, setError] = useState(null);
+    const [refresh, setRefresh] = useState(false);
+    const [flag, setFlag] = useState(false);
+    const user = useSelector((store) => (store.user))
+    useEffect( () => {
+      const fetch = async () => {
+      try{
+        setFlag(true)
+        setIsPending(true)
+        const res = await profile();
+        dispatch(addUser(res.user))
+        
+      }catch(err){
+        console.log("error in calling useEffect in student onboard "+ err.message);
+      }finally{
+        setIsPending(false);
+        setFlag(false)
+      }
+    };
+    fetch();
+    }, [refresh])
+
     const [formState, setFormState] = useState({
-    fullName: '',
-    semester: '',
-    address: '',
-    gender: '',
-    department: '',
-    age: '',
-    rollNumber: '',
-    studentID: '',
-    contactNumber: '',
-    profilePic: '',
-    email: ''
-});
+        fullName: user?.fullName || '',
+        semester: user?.semester || '',
+        address: user?.address || '',
+        gender: user?.gender || '',
+        department: user?.department || '',
+        age: user?.age || '',
+        rollNumber: user?.rollNumber || '',
+        studentID: user?.studentID || '',
+        contactNumber: user?.contactNumber || '',
+        profilePic: user?.profilePic || '',
+        email: user?.email || ''
+    });
 
+    // we can also use a function to set the above values instead doing same work in every filled
+    
+    useEffect(() => {
+      if (user && Object.keys(user).length > 0) {
+        setFormState({
+          fullName: user.fullName || '',
+          semester: user?.semester || '',
+          address: user.address || '',
+          gender: user.gender || '',
+          department: user.department || '',
+          age: user.age || '',
+          rollNumber: user.rollNumber || '',
+          studentID: user.studentID || '',
+          contactNumber: user.contactNumber || '',
+          profilePic: user.profilePic || '',
+          email: user.email || ''
+        });
+      }
+    }, [user]);
 
-    const handleSubmit = (e) =>{
+    const handleSubmit = async(e) =>{
         
         e.preventDefault()
+        try{
+          setIsPending(true);
+          const res = await studentOnboard(formState);
+          dispatch(addUser(res.user))
+          setRefresh(prev => !prev);
+        }
+        catch(err){
+          console.log("Error in student onboarding "+ err.message);
+          setError(err.message?.data?.message || "Onboarding failed")
+        }
+        finally{
+          setIsPending(false)
+        }
     }
 
     const handleRandomAvatar = () => {
@@ -31,12 +92,19 @@ const StudentOnboard = () => {
       profilePic: randomAvatar
     }));
     }
+    if(flag){
+      return(
+        <div>
+          Loading....
+        </div>
+      )
+    }
     return(
         <>
         {/* modal-box max-w-7xl  */}
         <div className="min-h-screen bg-base-100 flex items-center justify-center p-4 ">
         <div className="card bg-base-200 w-full max-w-3xl shadow-xl">  
-        <div className="card-body p-6 sm:p-8">
+        <div className="card-body p-6 sm:p-8" >
           <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">Complete Your Profile</h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col items-center justify-center space-y-4">
@@ -62,6 +130,14 @@ const StudentOnboard = () => {
                 </button>
               </div>
             </div>
+
+            {/* error */}
+
+            {error && (
+              <div className="alert alert-error mb-4">
+                <span>{error}</span>
+              </div>
+            )}
 
             {/* details */}
 
@@ -121,13 +197,31 @@ const StudentOnboard = () => {
               {/* studentID */}
               <div className="form-control">
               <label className="label">
-                <span className="label-text">Roll Number</span>
+                <span className="label-text">Student Id</span>
               </label>
               <input
                 type="Number"
                 name="studentID"
                 value={formState.studentID}
                 onChange={(e) => setFormState((prev) => ({ ...prev, studentID: e.target.value }))}
+                className="input input-bordered w-full"
+                placeholder="Your StudentID"
+                required
+              />
+            </div>
+
+
+            {/* semester */}
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Semester</span>
+              </label>
+              <input
+                type="Number"
+                name="studentID"
+                value={formState.semester}
+                onChange={(e) => setFormState((prev) => ({ ...prev, semester: e.target.value }))}
                 className="input input-bordered w-full"
                 placeholder="Your StudentID"
                 required
@@ -191,7 +285,7 @@ const StudentOnboard = () => {
                     <option value="">Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
-                    <option value="othem">Other</option>
+                    <option value="other">Other</option>
                 </select>
             </div>
 
@@ -242,6 +336,7 @@ const StudentOnboard = () => {
         </div>
         </>
     )
+
 }
 
 

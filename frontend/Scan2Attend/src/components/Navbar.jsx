@@ -3,6 +3,7 @@ import { Palette } from 'lucide-react';
 import ThemeSelector  from './ThemeSelector';
 import { Croissant } from 'lucide-react';
 import { Link } from "react-router-dom";
+import StudentOnboard from '../StudentPages/StudentOnboard';
 
 const Navbar = () => {
   return (
@@ -71,7 +72,11 @@ const Navbar = () => {
         </li>
         <li><a className="hover:bg-base-200 rounded-lg transition-colors">Settings</a></li>
         <li>
-          <Link to= '/'>@
+        <Link to='/student/onboard'>
+        <span className="hover:bg-base-200 rounded-lg transition-colors">StudentOnboard</span>
+        </Link></li>
+        <li>
+          <Link to= '/'>
           <span className="hover:bg-base-200 rounded-lg transition-colors">Logout</span>
           </Link>
           </li>

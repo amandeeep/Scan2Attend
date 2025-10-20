@@ -101,9 +101,19 @@ import {
   SquareX,
 } from "lucide-react";
 import ThemeSelector from './ThemeSelector';
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+import {logout} from '../lib/api';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const handleLogout = async()=>{
+    try{
+      const res = await logout();
+      navigate('/')
+    }catch(err){
+      console.log("erro in logout "+err.message)
+    }
+  }
   return (
     <div className="drawer z-50">
       {/* Sidebar toggle control */}
@@ -158,13 +168,13 @@ const Sidebar = () => {
 
           {/* Logout Button */}
           <div className="mt-auto font-semibold text-xl">
-            <Link
-              to="/"
+            <button
+              onClick={handleLogout}
               className="btn btn-error w-full gap-2 flex items-center justify-center"
             >
               <LogOut />
               Logout
-            </Link>
+            </button>
           </div>
         </div>
       </div>

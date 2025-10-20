@@ -44,4 +44,15 @@ export const resetPass = async (resetPassData) => {
 
 export const logout = async () => {
     const res = await axiosInstance.post('/auth/logout')
+    return res.data;
+}
+
+export const studentOnboard = async (studentOnboardData) => {
+    const res = await axiosInstance.post('/auth/studentOnboard', studentOnboardData);
+    return res.data;
+}
+
+export const profile = async () => {
+    const res = await axiosInstance.post('/profile/student');
+    return res.data;
 }
