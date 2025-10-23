@@ -14,7 +14,8 @@ const SignUpPage = () => {
     const [signupData, setSignupData] = useState({
         fullName: "",
         email: "",
-        password: ""
+        password: "",
+        role: ''
     })
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState(null);
@@ -39,7 +40,7 @@ const SignUpPage = () => {
   return (
     <div >
         
-        <div className='h-screen flex items-center justify-center p-4 sm:p-6 md:p-8' >
+        <div className='min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 bg-base-100' >
             {/* RightSide form section */}
             <div>
                 <div className='border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden'>
@@ -102,6 +103,29 @@ const SignUpPage = () => {
                                         </label>
                                         <input type="password" placeholder='••••••••' className=' input input-bordered w-full' value={signupData.password} onChange={(e) => setSignupData({...signupData, password:e.target.value}) } required />
                                         
+                                    </div>
+
+                                    {/* select role */}
+
+                                    <div className="mb-4">
+                                    <span className="text-base font-medium">Select Role:</span>
+                                    <div className="flex gap-6 mt-2">
+                                        {["student", "teacher", "college"].map((role) => (
+                                        <label key={role} className="cursor-pointer flex items-center gap-2 rounded-lg border p-2 hover-translate-z">
+                                            <input
+                                            type="radio"
+                                            name="role"
+                                            value={role}
+                                            checked={signupData.role === role}
+                                            onChange={(e) =>
+                                                setSignupData({ ...signupData, role: e.target.value })
+                                            }
+                                            required
+                                            />
+                                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                                        </label>
+                                        ))}
+                                    </div>
                                     </div>
 
                                     {/* this is terms and condition field */}

@@ -1,26 +1,49 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Croissant, ShipWheel } from 'lucide-react';
 import {Link, useNavigate} from 'react-router-dom'
 import { login } from '../lib/api';
 import img from '../Images/BoyAtten.png'
 import google from '../Images/GoogleLogo.png'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {addUser} from '../store/userSlice'
+import { setAuth, setOnboard } from '../store/authSlice';
+import { profile } from '../lib/api';
 
 const LoginPage = () => {
     // const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("")
-    // const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!
-
+    // const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!    
     const [loginData, setLoginData] = useState({
         email:"",
         password: "",
+        role: '',
         // isLogging: ""
     })
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [isPending, setIsPending] = useState(null);
     const [error, setError] = useState(false);
+    const user = useSelector((store) => (store.user))
+    const board = useSelector((store) => (store.auth))
+    useEffect(() =>{
+       const fetch = async () => {
+        try{
+            const res = await profile();
+            console.log(res);
+            dispatch(addUser(res.user));
+            dispatch(setOnboard(true));
+            dispatch(setAuth(true))
+        }catch(err){
+            console.log("error in useEffect of login page "+err.message);
+        }
+        
+
+       } 
+       fetch()
+    },[])
+    // console.log("user store "+ user.isOnboard)
+    // console.log("auth store "+ auth.setAuth)
+    // console.log("board store "+ auth.setOnboard)
 
     const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,7 +51,9 @@ const LoginPage = () => {
         setIsPending(true);
         const res = await login(loginData); 
         dispatch(addUser(res));
-        navigate("/college/dashboard");
+        dispatch(setAuth(true));
+        dispatch(setOnboard(true));
+        //navigate("/student/onboard");
     } catch (error) {
         console.error("Login failed:", error.message);
         setError(error.response?.data?.message || "Login failed");
@@ -72,6 +97,29 @@ const LoginPage = () => {
                                     <p className="text-sm opacity-70">
                                     Sign in to your account 
                                     </p>
+                                </div>
+                                
+                                {/* Select role */}
+                                
+                                <div className="mb-4">
+                                <span className="text-base font-medium">Select Role:</span>
+                                <div className="flex gap-6 mt-2">
+                                    {["student", "teacher", "college"].map((role) => (
+                                    <label key={role} className="cursor-pointer flex items-center gap-2 rounded-lg border p-2">
+                                        <input
+                                        type="radio"
+                                        name="role"
+                                        value={role}
+                                        checked={loginData.role === role}
+                                        onChange={(e) =>
+                                            setLoginData({ ...loginData, role: e.target.value })
+                                        }
+                                        required
+                                        />
+                                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                                    </label>
+                                    ))}
+                                </div>
                                 </div>
 
                                 {/* this is email field */}
