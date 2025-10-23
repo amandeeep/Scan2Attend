@@ -1,5 +1,7 @@
 import Student from '../models/Student.js';
 import jwt from 'jsonwebtoken';
+import Teacher from '../models/Teacher.js';
+import College from '../models/College.js';
 
 export const authMiddleware = async (req, res, next) => {
     try{
@@ -7,7 +9,18 @@ export const authMiddleware = async (req, res, next) => {
         if(!token) return res.status(400).json({message: "no token find"});
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!decode) return res.status(400).json({message: "invalid token"});
-        const user = await Student.findById(decode.userId).select("-password");
+
+        let user;
+        if(decode.role === 'student'){
+            user = await Student.findById(decode.userId).select("-password");
+        }
+        else if(decode.role === 'college'){
+            user = await College.findById(decode.userId).select("-password");
+        }
+        else{
+            user = await Teacher.findById(decode.userId).select('-password');
+        }
+        
         if(!user){
             return res.status(401).json({
                 message: "invalid user"
@@ -15,6 +28,7 @@ export const authMiddleware = async (req, res, next) => {
         }
 
         req.user = user;
+        req.roll = decode.role
         next();
     }
     catch (err) {
