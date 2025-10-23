@@ -69,6 +69,10 @@ const studentSchema = new mongoose.Schema({
     isOtpVerified:{
         type: Boolean,
         default: false
+    },
+    collegeId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "College"
     }
 },{timestamps: true});
 
