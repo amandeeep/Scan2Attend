@@ -122,7 +122,7 @@ export async function login(req,res){
             message: "Invalid credentials"
         })
 
-        const token = jwt.sign({userId: user._id, role : 'student'}, process.env.JWT_SECRET_KEY, {expiresIn: '7d'});
+        const token = jwt.sign({userId: user._id, role : role}, process.env.JWT_SECRET_KEY, {expiresIn: '7d'});
 
         // res.cookie("jwt",token,{
         //     httpOnly: true,

@@ -29,10 +29,21 @@ const subjectSchema = new mongoose.Schema({
         type:String,
         ref: 'Student'
     }],
-    teacherId:{
+    teacherId:[{
         type:mongoose.Schema.Types.ObjectId,
         ref: 'Teacher'
-    },
+    }],
+    teacherIds: [
+        {
+        type: String,
+        ref: "Teacher",
+        },
+    ],
+    teacherInfo: [{
+        teacherId: { type: String }, 
+        fullName: { type: String },
+        department: { type: String },
+    }],
     collegeId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'College'

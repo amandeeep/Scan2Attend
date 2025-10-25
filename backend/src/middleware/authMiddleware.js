@@ -9,6 +9,7 @@ export const authMiddleware = async (req, res, next) => {
         if(!token) return res.status(400).json({message: "no token find"});
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!decode) return res.status(400).json({message: "invalid token"});
+        console.log("Decoded token:", decode);
 
         let user;
         if(decode.role === 'student'){
@@ -28,11 +29,18 @@ export const authMiddleware = async (req, res, next) => {
         }
 
         req.user = user;
-        req.roll = decode.role
+        req.role = decode.role
         next();
     }
     catch (err) {
         console.log("Invalid token or user"+err.message);
+        res.clearCookie("jwt");
+        res.clearCookie("email");
+        res.clearCookie("role");
+
+        if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: "Session expired. Please login again." });
+        }
         res.status(500).json({message:"Something went wrong in authentication "+ err.message})
     }
 }
