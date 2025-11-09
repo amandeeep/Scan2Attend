@@ -4,7 +4,8 @@ import { markAttendance, getAttendance,updateAttendance } from '../controllers/a
 
 const attendanceRouter = express.Router();
 
-attendanceRouter.post('/mark',authMiddleware, markAttendance);
+attendanceRouter.post('/mark', authMiddleware, markAttendance); 
+attendanceRouter.post('/mark/:id',authMiddleware, markAttendance);
 attendanceRouter.get('/view',authMiddleware, getAttendance);
 attendanceRouter.put('/update',authMiddleware, updateAttendance);
 
