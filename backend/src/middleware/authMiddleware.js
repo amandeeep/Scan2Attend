@@ -11,15 +11,22 @@ export const authMiddleware = async (req, res, next) => {
         if(!decode) return res.status(400).json({message: "invalid token"});
         console.log("Decoded token:", decode);
 
-        let user;
+        let user, id, objectId;
         if(decode.role === 'student'){
             user = await Student.findById(decode.userId).select("-password");
+            id = user.studentID;
+            objectId = user._id;
         }
         else if(decode.role === 'college'){
             user = await College.findById(decode.userId).select("-password");
+            id = user.collegeId;
+            objectId = user._id;
         }
         else{
             user = await Teacher.findById(decode.userId).select('-password');
+            id = user.teacherId;
+            objectId = user._id;
+            console.log(id);
         }
         
         if(!user){
@@ -29,11 +36,13 @@ export const authMiddleware = async (req, res, next) => {
         }
 
         req.user = user;
-        req.role = decode.role
+        req.role = decode.role;
+        req.id = id;
+        req.objectId = objectId;
         next();
     }
     catch (err) {
-        console.log("Invalid token or user"+err.message);
+        console.log("Invalid token or user "+err.message);
         res.clearCookie("jwt");
         res.clearCookie("email");
         res.clearCookie("role");
