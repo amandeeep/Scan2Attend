@@ -5,25 +5,119 @@ import Attendance from "../models/Attendance.js";
 import Subject from "../models/Subject.js";
 
 
-export async function markAttendance (req, res){
-    try{
-        const{subjectCode, attendanceList, date, branch, source = 'manual'} = req.body;
-        if(!subjectCode || !attendanceList || !date || !branch) return res.status(400).json({
-            success: false,
-            message: "All fields are required"
-        });
-        const formatDate = new Date(date);
+// export async function markAttendance (req, res){
+//     try{
+//         const{subjectCode, attendanceList, date, department, source = 'manual'} = req.body;
+//         if(!subjectCode || !attendanceList || !date || !department) return res.status(400).json({
+//             success: false,
+//             message: "All fields are required"
+//         });
+//         const formatDate = new Date(date);
+//         const id = req.params.id || null;
+//         const markByTeacher = req.role  === 'teacher' ? req.id : id;
+//         const markByCollege = req.role === 'college' ? req.id : null;
+//         // console.log({
+//         // role: req.role,
+//         // teacherId: req.id,
+//         // paramsId: req.params.id
+//         // });
+//         let teacherDetails = null;
+//         if (markByTeacher) {
+//             const teacher = await Teacher.findById(req.objectId)
+//             if (teacher) {
+//                 teacherDetails = {
+//                     fullName: teacher.fullName,
+//                     department: teacher.department,
+//                     email: teacher.email,
+//                     contactNumber: teacher.contactNumber,
+//                     gender: teacher.gender,
+//                     objectId:teacher._id
+//                 };
+//             }
+//         }
+ 
+//         // const operations = attendanceList.map((entry) => ({ // entry means one object inside attendanceList array
+//         //     updateOne:{
+//         //         filter:{studentID:entry.studentID, subjectCode, date:formatDate, branch},
+//         //         update:{
+//         //             $set:{
+//         //                 status:entry.status,
+//         //                 teacherId:markByTeacher,
+//         //                 collegeId:markByCollege,
+//         //                 source,
+//         //                 branch:branch
+//         //             }
+//         //         },
+//         //         upsert:true
+//         //     }
+//         // }))
+
+
+//         const operations = await Promise.all(
+//             attendanceList.map(async (entry) => {
+//                 const student = await Student.findOne({ studentID: entry.studentID })//.lean();
+
+//                 return {
+//                     updateOne: {
+//                         filter: { studentID: entry.studentID, subjectCode, date: formatDate, branch: department },
+//                         update: {
+//                             $set: {
+//                                 status: entry.status,
+//                                 teacherId: markByTeacher,
+//                                 collegeId: markByCollege,
+//                                 source,
+//                                 branch: department,
+//                                 studentDetails: student
+//                                     ? {
+//                                         objectId: student._id,
+//                                         fullName: student.fullName,
+//                                         email: student.email,
+//                                         department: student.department,
+//                                         semester: student.semester,
+//                                         rollNumber: student.rollNumber,
+//                                     }
+//                                     : {},
+//                                 teacherDetails: teacherDetails || {},
+//                             },
+//                         },
+//                         upsert: true,
+//                     },
+//                 };
+//             })
+//         );
+
+//         await Attendance.bulkWrite(operations);
+//         res.status(200).json({
+//             success:true,
+//             message:"Attendance marked successfully"
+//         })
+//     }catch(err){
+//         console.log("Error in markAttendance "+err);
+//         res.status(500).json({
+//             success: false,
+//             message: "Error in markAttendance "+err.message
+//         })
+//     }
+// }
+
+export async function markAttendance(req, res) {
+    try {
+        const { subjectCode, attendanceList, department, source = 'manual' } = req.body;
+
+        if (!subjectCode || !attendanceList || !department) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required",
+            });
+        }
+
         const id = req.params.id || null;
-        const markByTeacher = req.role  === 'teacher' ? req.id : id;
+        const markByTeacher = req.role === 'teacher' ? req.id : id;
         const markByCollege = req.role === 'college' ? req.id : null;
-        // console.log({
-        // role: req.role,
-        // teacherId: req.id,
-        // paramsId: req.params.id
-        // });
+
         let teacherDetails = null;
         if (markByTeacher) {
-            const teacher = await Teacher.findById(req.objectId)
+            const teacher = await Teacher.findById(req.objectId);
             if (teacher) {
                 teacherDetails = {
                     fullName: teacher.fullName,
@@ -31,87 +125,116 @@ export async function markAttendance (req, res){
                     email: teacher.email,
                     contactNumber: teacher.contactNumber,
                     gender: teacher.gender,
-                    objectId:teacher._id
+                    objectId: teacher._id,
                 };
             }
         }
- 
-        // const operations = attendanceList.map((entry) => ({ // entry means one object inside attendanceList array
-        //     updateOne:{
-        //         filter:{studentID:entry.studentID, subjectCode, date:formatDate, branch},
-        //         update:{
-        //             $set:{
-        //                 status:entry.status,
-        //                 teacherId:markByTeacher,
-        //                 collegeId:markByCollege,
-        //                 source,
-        //                 branch:branch
-        //             }
-        //         },
-        //         upsert:true
-        //     }
-        // }))
 
+        const studentIDs = attendanceList.map(e => e.studentID);
+        const students = await Student.find({ studentID: { $in: studentIDs } });
+        const studentMap = {};
+        students.forEach(student => {
+            studentMap[student.studentID] = student;
+        });
 
-        const operations = await Promise.all(
-            attendanceList.map(async (entry) => {
-                const student = await Student.findOne({ studentID: entry.studentID })//.lean();
+        // Check for already marked attendance
+        const dateStudentPairs = attendanceList.map(e => ({
+            studentID: e.studentID,
+            date: new Date(e.date)
+        }));
 
-                return {
-                    updateOne: {
-                        filter: { studentID: entry.studentID, subjectCode, date: formatDate, branch },
-                        update: {
-                            $set: {
-                                status: entry.status,
-                                teacherId: markByTeacher,
-                                collegeId: markByCollege,
-                                source,
-                                branch,
-                                studentDetails: student
-                                    ? {
-                                        objectId: student._id,
-                                        fullName: student.fullName,
-                                        email: student.email,
-                                        department: student.department,
-                                        semester: student.semester,
-                                        rollNumber: student.rollNumber,
-                                    }
-                                    : {},
-                                teacherDetails: teacherDetails || {},
-                            },
-                        },
-                        upsert: true,
+        const alreadyMarked = await Attendance.find({
+            subjectCode,
+            branch: department,
+            $or: dateStudentPairs.map(e => ({ studentID: e.studentID, date: e.date }))
+        }).select('studentID date');
+
+        if (alreadyMarked.length > 0) {
+            const markedStudents = alreadyMarked.map(a => a.studentID);
+            const markedDates = alreadyMarked.map(a => a.date.toISOString().split('T')[0]);
+            return res.status(400).json({
+                success: false,
+                message: "Attendance already marked for some students",
+                studentIDs: markedStudents,
+                dates: markedDates
+            });
+        }
+
+        const operations = attendanceList.map(entry => {
+            if (!entry.studentID || !entry.status || !entry.date) {
+                throw new Error("Each entry must have studentID, status, and date");
+            }
+
+            const student = studentMap[entry.studentID];
+
+            return {
+                updateOne: {
+                    filter: {
+                        studentID: entry.studentID,
+                        subjectCode,
+                        date: new Date(entry.date),
+                        branch: department,
                     },
-                };
-            })
-        );
+                    update: {
+                        $set: {
+                            status: entry.status,
+                            teacherId: markByTeacher,
+                            collegeId: markByCollege,
+                            source,
+                            branch: department,
+                            studentDetails: student
+                                ? {
+                                      objectId: student._id,
+                                      fullName: student.fullName,
+                                      email: student.email,
+                                      department: student.department,
+                                      semester: student.semester,
+                                      rollNumber: student.rollNumber,
+                                  }
+                                : {},
+                            teacherDetails: teacherDetails || {},
+                        },
+                    },
+                    upsert: true,
+                },
+            };
+        });
 
         await Attendance.bulkWrite(operations);
+
         res.status(200).json({
-            success:true,
-            message:"Attendance marked successfully"
-        })
-    }catch(err){
-        console.log("Error in markAttendance "+err);
+            success: true,
+            message: "Attendance marked successfully",
+        });
+    } catch (err) {
+        console.error("Error in markAttendance:", err);
         res.status(500).json({
             success: false,
-            message: "Error in markAttendance "+err.message
-        })
+            message: "Error in markAttendance: " + err.message,
+        });
     }
 }
 
+
 export async function getAttendance (req, res) {
     try{
-        let { date,subjectCode,  page = 1, limit = 10 } = req.query;
+        let { date,subjectCode,  page = 1, limit = 100, department } = req.query;
 
         const query = {};
         page = parseInt(req.query.page) || 1;
-        limit = parseInt(req.query.limit) || 10;
-        limit = limit> 50 ? 50 : limit;
+        limit = parseInt(req.query.limit) || 100;
+        limit = limit> 500? 50 : limit;
         let skip = (page-1)*limit;
         if(req.role === 'teacher' || req.query.role === "teacher"){
-            const attendance = await Attendance.find({
+          let attendance;
+          if(department){
+            attendance = await Attendance.find({
+                teacherId: req.user.teacherId, subjectCode:subjectCode, branch:department}).select("studentID date subjectCode status studentDetails").skip(skip).limit(limit);
+          }
+          else{
+            attendance = await Attendance.find({
                 teacherId: req.user.teacherId, subjectCode:subjectCode}).select("studentID date subjectCode status studentDetails").skip(skip).limit(limit);
+          } 
             if(attendance.length > 0){
             return res.status(200).json({
                 success: 'true',
