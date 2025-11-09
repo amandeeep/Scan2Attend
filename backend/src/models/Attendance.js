@@ -21,6 +21,21 @@ const attendanceSchema = new mongoose.Schema({
         required:true,
         ref: 'Teacher'
     },
+    teacherDetails: {
+        fullName: { type: String },
+        department: { type: String },
+        email: { type: String },
+        contactNumber: { type: String },
+        objectId:{type:mongoose.Schema.Types.ObjectId, ref:"Teacher"}
+    },
+    studentDetails: {
+        objectId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+        fullName: { type: String },
+        email: { type: String },
+        department: { type: String },
+        semester: { type: Number },
+        rollNumber: { type: Number },
+    },
     date:{
         type: Date,
         required: true
