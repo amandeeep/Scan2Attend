@@ -2,6 +2,7 @@ import {useState} from "react";
 import { getStudentSubjects } from "../lib/subjectApi";
 import { getAttendance, updateAttendance, markAttendance} from "../lib/attendanceApi";
 
+
 const TeacherMarkAttendance = () => {
     const [attendanceData, setAttendanceData] = useState({
         code: "",
@@ -11,20 +12,11 @@ const TeacherMarkAttendance = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [attendanceRecords, setAttendanceRecords] = useState([]);
-    const [attendanceUpdates, setAttendanceUpdates] = useState({});
-    const [updateMode, setUpdateMode] = useState(false);
-    const [markData, setMarkData] = useState({
-        subjectCode: attendanceData.code,
-        department: attendanceData.department,
-        
-        attendanceList: [
-            {studentID: "",
-             status: "",
-             date: new Date().toISOString().split('T')[0]}
-        ]
-    })
-    const [markingMode, setMarkingMode] = useState(false); // use for allow teacher to mark attendance
-    const [editableDates, setEditableDates] = useState(Array(11).fill(false));
+    const [markingMode, setMarkingMode] = useState(false);
+    const [tempStatuses, setTempStatuses] = useState({});
+    const [editMode, setEditMode] = useState(false);
+    const [updatedAttendance, setUpdatedAttendance] = useState({});
+    const [confirmModal, setConfirmModal] = useState({ open: false, studentId: null, date: null });
 
 
     
@@ -63,7 +55,6 @@ const TeacherMarkAttendance = () => {
             const params = {role: "teacher", subjectCode: attendanceData.code, department: attendanceData.department};
             const res = await getAttendance(params);
             setAttendanceRecords(res.data || []);
-            setAttendanceUpdates({});
             
         }catch(err){
             console.error("Error in fetching attendance records: ", err);
@@ -73,46 +64,36 @@ const TeacherMarkAttendance = () => {
             setLoading(false);
         }
     }
-    
+
     const getStatus = (studentId, date) => {
         const record = attendanceRecords.find((r) => r.studentID === studentId && new Date(r.date).toISOString().split('T')[0] === date);
         return record ? record.status : "-";
     }
-//     const getStatus = (studentId, date) => {
-//   // Check for unsaved local changes first
-//   const localChange = markData.attendanceList.find(
-//     (entry) => entry.studentID === studentId && entry.date === date
-//   );
-
-//   if (localChange) return localChange.status;
-
-//   // If no local change, check fetched attendance records
-
-//   const record = attendanceRecords.find(
-//     (r) =>
-//       r.studentID === studentId &&
-//       new Date(r.date).toISOString().split("T")[0] === date
-//   );
-
-//   return record ? record.status : "-";
-// };
-
 
     const markAttendanceRecord = async(e) => {
         e.preventDefault();
         try{
             setLoading(true);
             setError(null);
-            if(!markData.subjectCode || !markData.department || (markData.attendanceList.length === 0)){
-                setError("Please provide all required fields to mark attendance");
+            
+            const attendanceList = Object.entries(tempStatuses).map(([key, status]) => {
+                const [studentID, date] = key.split('|');
+                return { studentID, status, date };
+            });
+            
+            if(!attendanceData.code || !attendanceData.department || attendanceList.length === 0){
+                setError("Please mark at least one attendance before saving");
                 return;
             }
-            const res = await markAttendance(markData);
-            setMarkData({
-                subjectCode: "",
-                department: "",
-                attendanceList: [],
-            });
+            
+            const dataToSend = {
+                subjectCode: attendanceData.code,
+                department: attendanceData.department,
+                attendanceList: attendanceList
+            };
+            
+            const res = await markAttendance(dataToSend);
+            setTempStatuses({}); 
             setMarkingMode(false);
             await fetchAttendance(new Event("submit"));
         }catch(err){
@@ -124,33 +105,32 @@ const TeacherMarkAttendance = () => {
     }
 
     const handleCellClick = (studentId, date, currentStatus) => {
-  // Only allow marking in markingMode AND only if the current status is "-"
-  if (!markingMode || currentStatus !== "-") return;
-
-  setMarkData((prev) => {
-    let updatedList = [...prev.attendanceList];
-    const existingIndex = updatedList.findIndex(
-      (entry) => entry.studentID === studentId && entry.date === date
-    );
-
-    if (existingIndex >= 0) {
-      // Toggle between Present and Absent
-      updatedList[existingIndex].status =
-        updatedList[existingIndex].status === "Present" ? "Absent" : "Present";
-    } else {
-      // First time marking → mark as Present
-      updatedList.push({ studentID: studentId, status: "Present", date });
+        if(!markingMode || currentStatus !== '-') return;
+        
+        const key = `${studentId}|${date}`;
+        
+        setTempStatuses(prev => {
+            const currentTemp = prev[key] || "Present";
+            const newStatus = currentTemp === "Present" ? "Absent" : "Present";
+            return {
+                ...prev,
+                [key]: newStatus
+            };
+        });
     }
 
-    return {
-      ...prev,
-      subjectCode: attendanceData.code,
-      department: attendanceData.department,
-      attendanceList: updatedList,
-    };
-  });
-};
-
+    const getCellStatus = (studentId, date) => {
+        const actualStatus = getStatus(studentId, date);
+        if(actualStatus !== '-') return actualStatus;
+        
+        const key = `${studentId}|${date}`;
+        return tempStatuses[key] || "-";
+    }
+    
+    const isNewlyMarked = (studentId, date) => {
+        const key = `${studentId}|${date}`;
+        return tempStatuses.hasOwnProperty(key);
+    }
 
     return(
         <div>
@@ -184,7 +164,12 @@ const TeacherMarkAttendance = () => {
                     <button
                     type="button"
                     className="btn btn-secondary mb-4"
-                    onClick={() => setMarkingMode(prev => !prev)}
+                    onClick={() => {
+                        setMarkingMode(prev => !prev);
+                        if(markingMode) {
+                            setTempStatuses({}); // Clear temp statuses when canceling
+                        }
+                    }}
                     >
                     {markingMode ? "Cancel Attendance" : "Mark Attendance"}
                     </button>
@@ -193,9 +178,9 @@ const TeacherMarkAttendance = () => {
                     type="button"
                     className="btn btn-accent mb-4"
                     onClick={markAttendanceRecord}
-                    disabled={markData.attendanceList.length === 0}
+                    disabled={Object.keys(tempStatuses).length === 0}
                     >
-                    Save Attendance
+                    Save Attendance ({Object.keys(tempStatuses).length})
                     </button>)}
                 </div>
                 <div className="overflow-auto border border-base-300 rounded-lg shadow-sm max-h-[28rem]">
@@ -218,14 +203,28 @@ const TeacherMarkAttendance = () => {
                                     <th className="sticky left-0 bg-base-100 z-10 shadow-md font-medium text-sm sm:text-base min-w-[8rem]">{student.studentId}</th>
                                     {dates.map((date) => {
                                         const status = getStatus(student.studentId, date);
+                                        const displayStatus = status === '-' ? getCellStatus(student.studentId, date) : status;
+                                        const isMarkedNow = isNewlyMarked(student.studentId, date);
                                         let cellClass = "";
-                                        if(status === "Present") cellClass = "bg-green-200 text-green-900";
-                                        else if(status === "Absent") cellClass ="bg-red-200 text-red-900"
-                                        const isClickable = markingMode || status === "-";
+                                        
+                                        if(displayStatus === "Present") {
+                                            cellClass = isMarkedNow 
+                                                ? "bg-green-500 text-green-900 border-2 border-green-600 font-semibold" 
+                                                : "bg-green-200 text-green-900";
+                                        } else if(displayStatus === "Absent") {
+                                            cellClass = isMarkedNow 
+                                                ? "bg-red-500 text-red-900 border-2 border-red-600 font-semibold text-xl" 
+                                                : "bg-red-200 text-red-900";
+                                        } else {
+                                            cellClass = "bg-gray-100 text-gray-500";
+                                        }
+                                        
+                                        const isClickable = markingMode && status === "-";
                                         return(
                                             <td key={date}
-                                            className={`text-center text-sm sm:text-base px-2 ${cellClass} ${isClickable ? "cursor-pointer" : ""}`} onClick = {(e) => handleCellClick(student.studentId, date, status)}>
-                                                {status}
+                                            className={`text-center text-sm sm:text-base px-2 ${cellClass} ${isClickable ? "cursor-pointer hover:bg-blue-100 hover:border-2 hover:border-blue-400" : ""}`} 
+                                            onClick = {() => handleCellClick(student.studentId, date, status)}>
+                                                {displayStatus}
                                             </td>
                                         )
                                     })}
@@ -244,6 +243,3 @@ const TeacherMarkAttendance = () => {
 }
 
 export default TeacherMarkAttendance;
-
-
-
