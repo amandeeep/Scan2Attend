@@ -352,6 +352,11 @@ export async  function sendOtp(req, res){
         console.log("Email 1234 sent:", info);
         }catch(err){
             console.error("SendMail error:", err);
+            return res.status(500).json({
+    success: false,
+    message: "Email service failed",
+    error: err.message,
+  });
         }
         res.cookie("schema",schema,{
             httpOnly: true,
