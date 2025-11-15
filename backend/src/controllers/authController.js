@@ -342,13 +342,17 @@ export async  function sendOtp(req, res){
          redis.set(cooldownKey, '1', { ex: 60 }),])
 
         // send mail
-        await transporter.sendMail({
+        try{
+        const info = await transporter.sendMail({
             from: `Scan2Attend Admin <${process.env.FAKE_EMAIL}>`,
             to: user.email,
             subject: 'Otp from Scan2Attend',
             html: `<h3>Your OTP: ${otp}</h3><p>Valid for 5 minutes.</p>`
-        })
-        
+        });console.log("Email sent:", info.response);
+        console.log("Email 1234 sent:", info);
+        }catch(err){
+            console.error("SendMail error:", err);
+        }
         res.cookie("schema",schema,{
             httpOnly: true,
             maxAge: 5*60*1000,
