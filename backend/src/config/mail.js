@@ -2,17 +2,14 @@ import nodemailer from 'nodemailer'
 import "dotenv/config";
 
 export const transporter = nodemailer.createTransport({
-    //service: "gmail",
+    // service: "gmail",
     host: "smtp.gmail.com",
-  port: 465,
-  secure: true, 
+    port: 465,
+    secure: true, 
     auth:{
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASS
     }
 })
-transporter.verify((err, success) => {
-  if (err) console.error("SMTP ERROR:", err);
-  else console.log("SMTP is ready");
-});
+
 
