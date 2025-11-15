@@ -10,7 +10,6 @@ const StudentSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const userData = useSelector((state) => state.user.userData);
-  console.log("userData in sidebar ", userData);
   const fullName = userData?.fullName || "Student Name";
   const email = userData?.email || "example@mail.com";
   const semester = userData?.semester || '1';

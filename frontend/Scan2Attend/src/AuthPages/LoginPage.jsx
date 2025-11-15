@@ -24,9 +24,6 @@ const LoginPage = () => {
         try{
             setIsPending(true);
             const res = await login(loginData);
-            console.log(res.role);
-            console.log(res.message);
-            console.log(res.isOnboard);
             if(res.role === 'student'){
                 dispatch(setAuth(true));
                 dispatch(setOnboard(res.isOnboard));

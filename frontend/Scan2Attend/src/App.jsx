@@ -32,10 +32,6 @@ const isAuth = useSelector((state) => state.auth.isAuthenticated);
 const isOnboard = useSelector((state) => state.auth.isOnboarded);
 const isRole = useSelector((state) => state.auth.isRole);
 const userData = useSelector((state) => state.user.userData);
-console.log("isAuth in app.jsx" + isAuth)
-console.log("is role in app.jsx "+ isRole)
-console.log("isOnboard value in app.jsx "+isOnboard)
-console.log("userData in app.jsx ",userData);
   return (
     <>
       <div className='h-screen' data-theme={theme}>
