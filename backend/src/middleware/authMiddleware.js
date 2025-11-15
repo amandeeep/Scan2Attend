@@ -9,7 +9,6 @@ export const authMiddleware = async (req, res, next) => {
         if(!token) return res.status(400).json({message: "no token find"});
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!decode) return res.status(400).json({message: "invalid token"});
-        console.log("Decoded token:", decode);
 
         let user, id, objectId;
         if(decode.role === 'student'){
@@ -26,7 +25,7 @@ export const authMiddleware = async (req, res, next) => {
             user = await Teacher.findById(decode.userId).select('-password');
             id = user.teacherId;
             objectId = user._id;
-            console.log(id);
+            
         }
         
         if(!user){

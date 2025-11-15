@@ -234,11 +234,7 @@ export async function updateAttendance(req, res) {
 
     const result = await Attendance.bulkWrite(operations);
 
-    console.log("updateAttendance -> bulkWrite result:", {
-      matched: result.matchedCount,
-      modified: result.modifiedCount,
-      upserted: result.upsertedCount,
-    });
+   
 
 
     if (result.modifiedCount === 0) {
