@@ -9,10 +9,10 @@ import profileRoutes from './routes/profile.js'
 import subjectRouter from './routes/subject.js';
 import attendanceRouter from './routes/attendance.js';
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://scan2attend.onrender.com"],
     credentials: true
 }))
 app.use(cookieParser());
