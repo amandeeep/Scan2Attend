@@ -50,7 +50,7 @@ export const logout = async () => {
 // Onboard
 
 export const onboard = async (onboardData) => {
-    const res = await axiosInstance.post('/auth/onboard', onboardData);
+    const res = await axiosInstance.post('/api/auth/onboard', onboardData);
     return res.data;
 }
 
