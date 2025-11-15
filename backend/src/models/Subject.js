@@ -39,6 +39,12 @@ const subjectSchema = new mongoose.Schema({
         ref: "Teacher",
         },
     ],
+    studentInfo:[{
+        studentId: {type: String},
+        fullName: {type: String},
+        department: {type: String},
+        rollNumber: {type:String},
+    }],
     teacherInfo: [{
         teacherId: { type: String }, 
         fullName: { type: String },

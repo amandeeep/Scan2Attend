@@ -1,12 +1,14 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "./StudentNavbar";
 import { Sidebar } from "lucide-react";
 import StudentSidebar from "./StudentSidebar";
+import StudentNavbar from "./StudentNavbar";
 const StudentBody = () =>{
     return(
         <>
-        <Navbar/>
+        <StudentNavbar/>
         <StudentSidebar/>
+        <Outlet/>
         
         </>
     )

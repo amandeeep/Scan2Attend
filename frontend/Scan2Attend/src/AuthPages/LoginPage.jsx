@@ -5,8 +5,8 @@ import { login } from '../lib/api';
 import img from '../Images/BoyAtten.png'
 import google from '../Images/GoogleLogo.png'
 import {useDispatch, useSelector} from 'react-redux'
-import {addUser} from '../store/userSlice'
-import { setAuth, setOnboard } from '../store/authSlice';
+import {addUser, removeUser} from '../store/userSlice'
+import { setAuth, setOnboard, setIsRole, removeAuth } from '../store/authSlice';
 import { profile } from '../lib/api';
 
 const LoginPage = () => {
@@ -23,51 +23,105 @@ const LoginPage = () => {
     const dispatch = useDispatch();
     const [isPending, setIsPending] = useState(null);
     const [error, setError] = useState(false);
-    const user = useSelector((store) => (store.user))
-    const board = useSelector((store) => (store.auth))
-    useEffect(() =>{
-       const fetch = async () => {
-        try{
-            const res = await profile();
-            console.log(res);
-            dispatch(addUser(res.user));
-            dispatch(setOnboard(true));
-            dispatch(setAuth(true))
-        }catch(err){
-            console.log("error in useEffect of login page "+err.message);
-        }
+    // const user = useSelector((store) => (store.user))
+    // const board = useSelector((store) => (store.auth))
+    // useEffect(() =>{
+    //    const fetch = async () => {
+    //     try{
+    //         const res = await profile();
+    //         console.log(res);
+    //         dispatch(addUser(res.user));
+    //         // dispatch(setOnboard(true));
+    //         dispatch(setAuth(true))
+    //     }catch(err){
+    //         console.log("error in useEffect of login page "+err.message);
+    //     }
         
 
-       } 
-       fetch()
-    },[])
+    //    } 
+    //    fetch()
+    // },[])
     // console.log("user store "+ user.isOnboard)
     // console.log("auth store "+ auth.setAuth)
     // console.log("board store "+ auth.setOnboard)
 
-    const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-        setIsPending(true);
-        const res = await login(loginData); 
-        dispatch(addUser(res));
-        dispatch(setAuth(true));
-        dispatch(setOnboard(true));
-        //navigate("/student/onboard");
-    } catch (error) {
-        console.error("Login failed:", error.message);
-        setError(error.response?.data?.message || "Login failed");
+    // const handleLogin = async (e) => {
+    // e.preventDefault();
+    // try {
+    //     setIsPending(true);
+    //     const res = await login(loginData); 
+    //     // dispatch(addUser(res));
+    //     // dispatch(setAuth(true));
+    //     // dispatch(setOnboard(true));
+    //     console.log(res.role + res.isOnboard);
+    //     console.log("here isOnboard value "+res.message);
+    //     if(res.role === 'student'){
+    //         if(res.isOnboard == false) navigate("/student/onboard");
+    //         else navigate('/student')
+    //     }
+    //     else if(res.role === 'teacher'){
+    //         if(res.isOnboard == false) {navigate("/teacher/onboard"); console.log(res.isOnboard)}
+    //         else if(res.isOnboard == true) navigate('/teacher');
+    //     }
+    //     else if(res.role === 'college') navigate("/college");
+    //     //navigate("/student/onboard");
+    // } catch (error) {
+    //     console.error("Login failed:", error.message); 
+    //     setError(error.response?.data?.message || "Login failed");
         
+    // }
+    // finally{
+    //     setIsPending(false)
+    // }
+    // };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try{
+            setIsPending(true);
+            const res = await login(loginData);
+            console.log(res.role);
+            console.log(res.message);
+            console.log(res.isOnboard);
+            if(res.role === 'student'){
+                dispatch(setAuth(true));
+                dispatch(setOnboard(res.isOnboard));
+                dispatch(setIsRole(res.role));
+                dispatch(addUser(res.userDetails));
+                // if(res.isOnboard == false) navigate('/student/onboard');
+                // else navigate('/student')
+            }
+            else if(res.role === 'teacher'){
+                dispatch(setAuth(true));
+                dispatch(setOnboard(res.isOnboard));
+                dispatch(setIsRole(res.role));
+                dispatch(addUser(res.userDetails));
+                // if(res.isOnboard == false) navigate('/teacher/onboard');
+                // else navigate('/teacher')
+            }
+            else if(res.role === 'college'){
+                dispatch(setAuth(true));
+                dispatch(setOnboard(res.isOnboard));
+                dispatch(setIsRole(res.role));
+                dispatch(addUser(res.userDetails));
+                // if(res.isOnboard == false) navigate('/college/onboard');
+                // else navigate('/college')
+            }
+        }catch(err){
+            console.error("Login failed:", error.message);
+            setError(error.response?.data?.message || "Login failed");
+            dispatch(removeAuth());
+            dispatch(removeUser());
+        }finally{
+           setIsPending(false); 
+           
+        }
     }
-    finally{
-        setIsPending(false)
-    }
-    };
 
   return (
     <div >
         
-        <div className='h-screen flex items-center justify-center p-4 sm:p-6 md:p-8' >
+        <div className=' flex items-center justify-center p-4 sm:p-6 md:p-8' >
             {/* RightSide form section */}
             <div>
                 <div className='border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden'>

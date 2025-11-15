@@ -1,29 +1,23 @@
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export default function TagInput({
   label = "Add Tags",
   placeholder = "Type and press Space, Enter or Comma...",
+  value = [],       
   onChange,
-  initialTags = [],
 }) {
-  const [tags, setTags] = useState(initialTags);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef(null);
 
-  const addTag = (value) => {
-    const trimmed = value.trim();
-    if (trimmed !== "" && !tags.includes(trimmed)) {
-      const newTags = [...tags, trimmed];
-      setTags(newTags);
-      onChange?.(newTags);
+  const addTag = (val) => {
+    const trimmed = val.trim();
+    if (trimmed !== "" && !value.includes(trimmed)) {
+      onChange?.([...value, trimmed]);
     }
   };
 
   const removeTag = (tagToRemove) => {
-    const newTags = tags.filter((tag) => tag !== tagToRemove);
-    setTags(newTags);
-    onChange?.(newTags);
+    onChange?.(value.filter((tag) => tag !== tagToRemove));
     inputRef.current?.focus();
   };
 
@@ -32,8 +26,8 @@ export default function TagInput({
       e.preventDefault();
       addTag(inputValue);
       setInputValue("");
-    } else if (e.key === "Backspace" && !inputValue && tags.length) {
-      removeTag(tags[tags.length - 1]);
+    } else if (e.key === "Backspace" && !inputValue && value.length) {
+      removeTag(value[value.length - 1]);
     }
   };
 
@@ -46,12 +40,11 @@ export default function TagInput({
           </span>
         </label>
       )}
-
       <div
         className="flex flex-wrap items-center gap-2 rounded-xl border border-base-content/20 bg-base-100 p-2 shadow-sm transition-all focus-within:shadow-md focus-within:border-primary hover:border-base-content/40"
         onClick={() => inputRef.current?.focus()}
       >
-        {tags.map((tag, index) => (
+        {value.map((tag, index) => (
           <div
             key={index}
             className="badge badge-primary badge-lg flex items-center gap-2 px-3 py-3 text-sm font-medium"
@@ -77,12 +70,6 @@ export default function TagInput({
           onKeyDown={handleKeyDown}
         />
       </div>
-
-      {/* {tags.length > 0 && (
-        <div className="mt-2 text-sm text-base-content/60">
-          <strong>{tags.length}</strong> tag{tags.length > 1 ? "s" : ""} added
-        </div>
-      )} */}
     </div>
   );
 }

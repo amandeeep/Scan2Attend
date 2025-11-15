@@ -24,8 +24,12 @@ const teacherSchema = new mongoose.Schema({
         type:String,
         default:''
     },
-    collegeId:{
+    collegeObjectId:{
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'College'
+    },
+    collegeId:{
+        type: String,
         ref: 'College'
     },
     password:{

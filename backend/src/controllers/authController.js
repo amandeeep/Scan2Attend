@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import {transporter }from '../config/mail.js';
 import {redis} from '../config/redis.js'
+import { uploadOnCloudinary } from '../config/cloudinary.js';
 import 'dotenv/config'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs';
@@ -49,13 +50,13 @@ export async function signup(req,res){
         // })
         let newUser;
         if (role === 'student') {
-            newUser = await Student.create({ email, fullName, password, profilePic: randomAvatar });
+            newUser = await Student.create({ email, fullName, password, profilePic: randomAvatar, isOnboard: false });
         } else if (role === 'teacher') {
-            newUser = await Teacher.create({ email, fullName, password, profilePic: randomAvatar });
+            newUser = await Teacher.create({ email, fullName, password, profilePic: randomAvatar, isOnboard: false });
         } else if (role === 'college') {
-            newUser = await College.create({ email, fullName, password, profilePic: randomAvatar });
+            newUser = await College.create({ email, fullName, password, profilePic: randomAvatar, isOnboard: false });
         }
-
+        // password is automatically hased in database
 
         // const token = jwt.sign(
         //     {userId: newStudent._id, role : "student"}, process.env.JWT_SECRET_KEY, {expiresIn: '7d'}
@@ -103,10 +104,29 @@ export async function login(req,res){
                 message: "All fields are required"
             })
         }
-        let user;
-        if(role === 'student') user = await Student.findOne({email});
-        else if(role === 'college') user = await College.findOne({email});
-        else if(role === 'teacher') user = await Teacher.findOne({email});
+        let user; 
+        let check;
+        let isOnboard;
+        let userData;
+        if(role === 'student') {
+            user = await Student.findOne({email});
+            userData = user.toObject();
+            delete userData.password;
+            isOnboard = user?.isOnboard === true;
+        }
+        else if(role === 'college') {
+            user = await College.findOne({email})
+            userData = user.toObject();
+            delete userData.password;
+            isOnboard = user?.isOnboard === true;
+        }
+        else if(role === 'teacher') {
+            user = await Teacher.findOne({email});
+            userData = user.toObject();
+            delete userData.password;
+            isOnboard = user?.isOnboard === true;
+
+        }
         else return res.status(400).json({
             success: false,
             message: "No valid role"
@@ -159,8 +179,11 @@ export async function login(req,res){
         setCookie(res, "role", role);
 
         res.status(201).json({
-            sucess: true,
+            success: true,
             message: "Login successfully",
+            role: role,
+            isOnboard: isOnboard,
+            userDetails : userData
             // user: user
         })
     }
@@ -186,52 +209,156 @@ export function logout(req,res){
 
 // student onboard
 
-export async function studentOnboard (req, res) {
-    try{
-        const userId = req.user._id;
-        const {fullName, address, semester, department, rollNumber, gender,age,email, studentID, contactNumber,profilePic} = req.body;
-        if(!fullName || !address || !semester || !rollNumber || !gender || !age || !email || !studentID || !contactNumber || !profilePic){
-            return res.status(400).json({
-                message: "All fields are required",
-                missingFields: [
-                    !fullName && "fullName",
-                    !address && "address",
-                    !semester && "semester",
-                    !department && "department",
-                    !gender && "gender",
-                    !age && "age",
-                    !email && "email",
-                    !rollNumber && "rollNumber",
-                    !studentID && "studentID",
-                    !contactNumber && "contactNumber",
+// export async function studentOnboard (req, res) {
+//     try{
+//         const userId = req.user._id;
+//         const {fullName, address, semester, department, rollNumber, gender,age,email, studentID, contactNumber,profilePic} = req.body;
+//         if(!fullName || !address || !semester || !rollNumber || !gender || !age || !email || !studentID || !contactNumber || !profilePic){
+//             return res.status(400).json({
+//                 message: "All fields are required",
+//                 missingFields: [
+//                     !fullName && "fullName",
+//                     !address && "address",
+//                     !semester && "semester",
+//                     !department && "department",
+//                     !gender && "gender",
+//                     !age && "age",
+//                     !email && "email",
+//                     !rollNumber && "rollNumber",
+//                     !studentID && "studentID",
+//                     !contactNumber && "contactNumber",
                     
-                    !profilePic && "profilePic"
-                ].filter(Boolean)
-            })
+//                     !profilePic && "profilePic"
+//                 ].filter(Boolean)
+//             })
 
-        }
-// By default, findOneAndUpdate() returns the document as it was before update was applied. If you set new: true, findOneAndUpdate() will instead give you the object after update was applied.
-        const update = await Student.findByIdAndUpdate(userId,{
-            ...req.body,
-            isOnboard: true
-        },{new: true})
-        if(!update)  return res.status(404).json({
-            message: "User not found"
-        })
-        return res.status(202).json({
-            success: true,
-            message: "Successfully Onboard",
-            user: update
-        })
-    }
-    catch(err){
-        console.log("error in student onboard" + err.message);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"+err.message
-        })
+//         }
+// // By default, findOneAndUpdate() returns the document as it was before update was applied. If you set new: true, findOneAndUpdate() will instead give you the object after update was applied.
+//         const update = await Student.findByIdAndUpdate(userId,{
+//             ...req.body,
+//             isOnboard: true
+//         },{new: true})
+//         if(!update)  return res.status(404).json({
+//             message: "User not found"
+//         })
+//         return res.status(202).json({
+//             success: true,
+//             message: "Successfully Onboard",
+//             user: update
+//         })
+//     }
+//     catch(err){
+//         console.log("error in student onboard" + err.message);
+//         res.status(500).json({
+//             success: false,
+//             message: "Internal server error"+err.message
+//         })
 
+//     }
+// }
+
+
+// onboard
+
+
+export async function onboard(req, res) {
+  try {
+    const userId = req.objectId;
+    const role = req.role;
+    const body = req.body;
+
+    // Profile image file from multer
+    const uploadedFile = req.file; //vvv
+
+    const requiredFields = {
+      student: [
+        "fullName", "address", "semester", "department", "rollNumber",
+        "gender", "age", "email", "studentID", "contactNumber", "profilePic"
+      ],
+
+      teacher: [
+        "fullName", "teacherId", "department", "address", "gender",
+        "age", "email", "contactNumber", "profilePic", "collegeId"
+      ],
+
+      college: [
+        "fullName", "collegeId", "address", "email", "contactNumber", "profilePic"
+      ]
+    };
+
+    if (!requiredFields[role]) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role for onboarding"
+      });
     }
+
+    
+
+
+    const missingFields = requiredFields[role].filter(field => !body[field]);
+
+    // profilePic is always required 
+    if (!uploadedFile && !body.profilePic) {
+      missingFields.push("profilePic");
+    } //vvvv
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+        missingFields
+      });
+    }
+
+
+
+    // Upload image to Cloudinary
+    let cloudUrl = body.profilePic;
+    if (uploadedFile) {
+      const uploadedUrl = await uploadOnCloudinary(uploadedFile.path);
+
+      if (!cloudUrl) {
+        return res.status(500).json({
+          success: false,
+          message: "Image upload failed"
+        });
+      }
+      cloudUrl = uploadedUrl;
+    } //vvvv
+
+
+    let Model;
+    if (role === "student") Model = Student;
+    else if (role === "teacher") Model = Teacher;
+    else if (role === "college") Model = College;
+
+    const updatedUser = await Model.findByIdAndUpdate(
+      userId,
+      { ...body, isOnboard: true, profilePic: cloudUrl },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `${role} onboarding completed successfully`,
+      user: updatedUser
+    });
+
+  } catch (err) {
+    console.log("Error in onboarding API:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error: " + err.message
+    });
+  }
 }
 
 
@@ -471,4 +598,52 @@ export async function resetPassword (req, res) {
 }
 
 
+}
+
+// addUser
+
+
+export async function addUser(req, res){
+    try{
+        const {fullName, branch, email, gender, password, rollNumber, semester, department, contactNumber, studentID, role = 'student'} = req.body;
+        
+        if(!role || !fullName || !email || !password || !studentID){
+            return res.status(400).json({
+                success: false,
+                message: "All *fields are required"
+            })
+        }
+        const emailSnippet = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailSnippet.test(email)){
+            return  res.status(400).json({
+                success: false,
+                message: "Fill correct email"
+            })
+        }
+
+        let studentExist = await Student.findOne({email});
+        if(studentExist){
+            return res.status(400).json({
+                success: false,
+                message: "Student already exist"
+            })
+        }
+        if(req.role != 'teacher' && req.role != 'college') return res.status(400).json({
+            success : false,
+            message : "Not Authorize to add Student "
+        })
+        let newUser = await Student.create({
+            email, fullName, password, branch, gender, semester, role, contactNumber, department, rollNumber, studentID
+        })
+        res.status(201).json({
+            success: true,
+            message: "Student add successfully"
+        })
+    }catch(err){
+        console.log("Error in addUser controller " + err.message);
+        res.status(500).json({
+            success: false,
+            message: "Error in addUser controller " + err.message
+        })
+    }
 }

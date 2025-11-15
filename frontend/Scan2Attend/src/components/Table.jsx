@@ -1,54 +1,96 @@
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { getAttendance } from "../lib/attendanceApi";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+const Table = () => {
+  const [attendance, setAttendance] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10; // items per page
 
-export default function CustomTable() {
+  // const [getData, setData] = useState({
+  //   attendance:'',
+  //   loading:'',
+  //   error:'',
+  //   page:'',
+  //   totalPages:'',
+  // })
+
+  // Fetch data from API
+  const fetchAttendance = async (page) => {
+    try {
+      setLoading(true);
+      const response = await getAttendance({
+        params: { page, limit },
+      });
+      setAttendance(response.data.data);
+      setTotalPages(response.data.totalPages);
+    } catch (err) {
+      setError(err.message || "Error fetching data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttendance(page);
+  }, [page]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
-            </TableRow>
+    <div>
+      <h2>Attendance Records</h2>
+      <table border="1" cellPadding="8" cellSpacing="0">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Student ID</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Teacher</th>
+          </tr>
+        </thead>
+        <tbody>
+          {attendance.map((item) => (
+            <tr key={item._id}>
+              <td>{item.studentDetails?.fullName || "N/A"}</td>
+              <td>{item.studentID}</td>
+              <td>{item.subjectCode}</td>
+              <td>{new Date(item.date).toLocaleDateString()}</td>
+              <td>{item.status}</td>
+              <td>{item.teacherDetails?.fullName || "N/A"}</td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div style={{ marginTop: "10px" }}>
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+        >
+          Previous
+        </button>
+        <span style={{ margin: "0 10px" }}>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+        >
+          Next
+        </button>
+      </div>
+    </div>
   );
-}
+};
+
+export default Table;

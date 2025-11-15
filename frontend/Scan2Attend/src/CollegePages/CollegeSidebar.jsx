@@ -1,7 +1,6 @@
-import React from "react";
 import { removeAuth } from "../store/authSlice";
 import { useDispatch } from "react-redux";
-import { X, Home, Settings, HelpCircle, LogOut, User, BookOpen, GraduationCap } from 'lucide-react';
+import { X, Home,   LogOut,  BookOpen, GraduationCap,  UserPen, ClipboardCheck, } from 'lucide-react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../lib/api";
 import { useSelector } from "react-redux";
@@ -14,7 +13,7 @@ const StudentSidebar = () => {
   console.log("userData in sidebar ", userData);
   const fullName = userData?.fullName || "Student Name";
   const email = userData?.email || "example@mail.com";
-  const semester = userData?.semester || '1';
+  const semester = userData?.semester || 0;
   const [first, last] = fullName.split(" ");
   const initials = first[0] + last[0];
   const profilePic = userData?.profilePic;
@@ -40,12 +39,10 @@ const StudentSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   const menuItems = [
-    { icon: Home, label: "Home", path: "/student" },
-    // { icon: BookOpen, label: "My Subjects", path: "/student/subjects" },
-    { icon: GraduationCap, label: "Attendance", path: "/student/attendance-view" },
-    { icon: User, label: "Profile", path: "/student/onboard" },
-    // { icon: Settings, label: "Settings", path: "/student/settings" },
-    // { icon: HelpCircle, label: "Help & Support", path: "/student/help" },
+    { icon: Home, label: "Home", path: "/teacher" },
+    { icon: ClipboardCheck, label: "Attendance", path: "/teacher/attendance-mark" },
+    { icon: UserPen, label: "Profile", path: "/teacher/onboard" },
+    { icon: BookOpen, label: "Subject & Enroll", path: "/teacher/addNenroll" },
   ];
 
   return (

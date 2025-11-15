@@ -1,7 +1,105 @@
+// import {
+//   Croissant,
+//   House,
+//   Settings,
+//   HandHelping,
+//   LogOut,
+//   SquareX,
+// } from "lucide-react";
+// import ThemeSelector from '../components/ThemeSelector';
+// import { Link, useNavigate} from "react-router-dom";
+// import {logout} from '../lib/api';
+// import { useDispatch } from "react-redux";
+// import { removeAuth } from "../store/authSlice";
+
+// const Sidebar = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const handleLogout = async()=>{
+//     try{
+//       const res = await logout();
+//       dispatch(removeAuth())
+//       navigate('/')
+//     }catch(err){
+//       console.log("erro in logout "+err.message)
+//     }
+//   }
+//   return (
+//     <div className="drawer z-50">
+//       {/* Sidebar toggle control */}
+//       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+      
+//       {/* Sidebar content */}
+//       <div className="drawer-side">
+//         <label htmlFor="my-drawer" className="drawer-overlay"></label>
+
+//         <div className="w-80 bg-base-200 min-h-full p-4 relative flex flex-col">
+          
+//           {/* Close Button */}
+//           <label
+//             htmlFor="my-drawer"
+//             className="btn btn-ghost absolute top-2 right-1"
+//           >
+//             <SquareX className="w-6 h-6" />
+//           </label>
+
+//           {/* Logo / Title */}
+//           <div className="mb-6 flex items-center gap-2 p-4 rounded-lg border border-gray-300 shadow-2xl">
+//             <Croissant className="w-9 h-9 text-primary" />
+//             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
+//               Scan2Attend
+//             </span>
+//           </div>
+
+//           {/* Navigation Items */}
+//           <ul className="menu space-y-2 text-xl font-semibold">
+//             <li>
+//               <Link to="/home" className="flex items-center gap-3">
+//                 <House /> Home
+//               </Link>
+//             </li>
+
+//             <li>
+//               <Link to="/settings" className="flex items-center gap-3">
+//                 <Settings /> Settings
+//               </Link>
+//             </li>
+
+//             <li>
+//               <Link to="/help" className="flex items-center gap-3">
+//                 <HandHelping /> Help
+//               </Link>
+//             </li>
+
+//             <li>
+//               <ThemeSelector />
+//             </li>
+//           </ul>
+
+//           {/* Logout Button */}
+//           <div className="mt-auto font-semibold text-xl">
+//             <button
+//               onClick={handleLogout}
+//               className="btn btn-error w-full gap-2 flex items-center justify-center"
+//             >
+//               <LogOut />
+//               Logout
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Sidebar;
+
+
+
 import React from "react";
 import { removeAuth } from "../store/authSlice";
 import { useDispatch } from "react-redux";
-import { X, Home, Settings, HelpCircle, LogOut, User, BookOpen, GraduationCap } from 'lucide-react';
+import { X, Home, Settings, HelpCircle, LogOut, User, BookOpen, GraduationCap, Info, UserPen, ClipboardCheck, UserPlus, ChevronRight,  } from 'lucide-react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../lib/api";
 import { useSelector } from "react-redux";
@@ -14,7 +112,7 @@ const StudentSidebar = () => {
   console.log("userData in sidebar ", userData);
   const fullName = userData?.fullName || "Student Name";
   const email = userData?.email || "example@mail.com";
-  const semester = userData?.semester || '1';
+  const semester = userData?.semester || 0;
   const [first, last] = fullName.split(" ");
   const initials = first[0] + last[0];
   const profilePic = userData?.profilePic;
@@ -40,12 +138,10 @@ const StudentSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   const menuItems = [
-    { icon: Home, label: "Home", path: "/student" },
-    // { icon: BookOpen, label: "My Subjects", path: "/student/subjects" },
-    { icon: GraduationCap, label: "Attendance", path: "/student/attendance-view" },
-    { icon: User, label: "Profile", path: "/student/onboard" },
-    // { icon: Settings, label: "Settings", path: "/student/settings" },
-    // { icon: HelpCircle, label: "Help & Support", path: "/student/help" },
+    { icon: Home, label: "Home", path: "/teacher" },
+    { icon: ClipboardCheck, label: "Attendance", path: "/teacher/attendance-mark" },
+    { icon: UserPen, label: "Profile", path: "/teacher/onboard" },
+    { icon: BookOpen, label: "Subject & Enroll", path: "/teacher/addNenroll" },
   ];
 
   return (

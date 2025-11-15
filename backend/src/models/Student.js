@@ -73,6 +73,10 @@ const studentSchema = new mongoose.Schema({
     collegeId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "College"
+    },
+    attendanceDetails:{
+        subjectDetails: [],
+        percentage:{type:Number},
     }
 },{timestamps: true});
 

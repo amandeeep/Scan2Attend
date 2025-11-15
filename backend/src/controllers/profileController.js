@@ -1,21 +1,47 @@
+import College from "../models/College.js";
 import Student from "../models/Student.js"
+import Teacher from "../models/Teacher.js";
 
 
 //student profile
 
-export async function studentProfile (req, res) {
-    try{const email = req.cookies.email
-    if(!email) return res.status(400).json({
-        success: false,
-        message:"Token expired"
-    })
-    const user = await Student.findOne({email}).select("-password");
-    if(!user){
-        return res.status(400).json({
-                success: false,
-                message: "Invalid email"
+export async function profile (req, res) {
+    try{
+        const email = req.cookies.email
+        const role = req.role
+        if(!email) return res.status(400).json({
+            success: false,
+            message:"Token expired"
+        })
+        let user;
+        if(role === 'student'){
+            user = await Student.findOne({email}).select("-password");
+            if(!user){
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid email"
                 })
-    }
+            }
+        }
+        else if(role === 'teacher'){
+            user = await Teacher.findOne({email}).select("-password");
+            if(!user){
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid email"
+                })
+            } 
+        }
+        else if(role === 'college'){
+            user = await College.findOne({email}).select("-password");
+            if(!user){
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid email"
+                })
+            }
+        }
+    
     res.status(201).json({
         success: true,
         message: "Profile data ",

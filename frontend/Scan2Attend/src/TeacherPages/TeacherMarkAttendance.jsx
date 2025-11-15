@@ -284,7 +284,7 @@ const TeacherMarkAttendance = () => {
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text font-semibold text-sm sm:text-base">Subject Code</span>
-                                        <span className="label-text-alt text-error text-xs sm:text-sm">*Required</span>
+                                        <span className="label-text-alt text-error text-xs sm:text-sm">*</span>
                                     </label>
                                     <input 
                                         type="text" 
@@ -300,7 +300,7 @@ const TeacherMarkAttendance = () => {
                                 <div className="form-control">
                                     <label className="label">
                                         <span className="label-text font-semibold text-sm sm:text-base">Department</span>
-                                        <span className="label-text-alt text-error text-xs sm:text-sm">*Required</span>
+                                        <span className="label-text-alt text-error text-xs sm:text-sm">*</span>
                                     </label>
                                     <select
                                         className="select select-bordered w-full text-sm sm:text-base"
@@ -319,12 +319,12 @@ const TeacherMarkAttendance = () => {
                             </div>
 
                             <button 
-                                className={`btn btn-primary w-full text-sm sm:text-base ${loading ? 'loading' : ''}`} 
+                                className={`btn btn-primary w-full text-sm sm:text-base `} 
                                 type="submit"
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <span className="loading loading-spinner loading-sm"></span>
+                                    <span className="loading loading-spinner"></span>
                                 ) : (
                                     <>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

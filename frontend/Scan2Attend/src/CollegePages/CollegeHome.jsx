@@ -1,9 +1,6 @@
 import React from 'react'
 import { useState } from "react";
-import AddUser from './AddUser';
-import CollegeStudentTable from './CollegeStudentTable';
-import Table from '../components/Table';
-
+import AddUser from '../components/AddUser';
 const CollegeHome = () => {
     const [isOpen, setIsOpen] = useState(false);
   return (
@@ -15,7 +12,7 @@ const CollegeHome = () => {
         </div>
         <div>
             {/* <CollegeStudentTable/> */}
-            <Table/>
+            {/* <Table/> */}
         </div>
       </div>
     </>

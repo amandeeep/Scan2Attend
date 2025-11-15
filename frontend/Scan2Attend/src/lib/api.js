@@ -47,12 +47,31 @@ export const logout = async () => {
     return res.data;
 }
 
-export const studentOnboard = async (studentOnboardData) => {
-    const res = await axiosInstance.post('/auth/studentOnboard', studentOnboardData);
+// studentOnboard
+
+export const onboard = async (onboardData) => {
+    const res = await axiosInstance.post('/auth/onboard', onboardData);
     return res.data;
 }
 
+// profile
+
 export const profile = async () => {
-    const res = await axiosInstance.post('/profile/student');
+    const res = await axiosInstance.post('/profile/user');
     return res.data;
+}
+
+// addUser
+
+export const addUser = async (data) => {
+    const res = await axiosInstance.post('/auth/addUser', data);
+    return res;
+}
+
+
+// upload avatar
+
+export const uploadAvatar = async (data) => {
+    const res = await axiosInstance.post('/auth/ua', post);
+    return res;
 }
