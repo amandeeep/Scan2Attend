@@ -1,6 +1,6 @@
 import axios from 'axios'
-
+import { backendUrl } from '../utils/constants'
 export const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_URL,
+    baseURL: backendUrl,
     withCredentials: true,
 })
