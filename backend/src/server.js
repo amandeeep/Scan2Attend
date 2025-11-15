@@ -12,7 +12,7 @@ import attendanceRouter from './routes/attendance.js';
 const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(cors({
-    origin: ["http://localhost:5173", "https://scan2attend.onrender.com"],
+    origin: ["http://localhost:5173", "https://scan2attend.onrender.com", "http://localhost:3001", "https://scan2attend-backend.onrender.com"],
     credentials: true
 }))
 app.use(cookieParser());
