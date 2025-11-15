@@ -4,7 +4,7 @@ import { axiosInstance } from "./axios";
 // login
 
 export const login = async(loginData) => {
-    const response = await axiosInstance.post("/api/auth/login",loginData);
+    const response = await axiosInstance.post("/auth/login",loginData);
     return response.data;
 }
 
@@ -50,7 +50,7 @@ export const logout = async () => {
 // Onboard
 
 export const onboard = async (onboardData) => {
-    const res = await axiosInstance.post('/api/auth/onboard', onboardData);
+    const res = await axiosInstance.post('/auth/onboard', onboardData);
     return res.data;
 }
 
