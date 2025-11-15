@@ -8,7 +8,7 @@ import 'dotenv/config'
 import bcrypt from 'bcryptjs';
 import College from '../models/College.js';
 import Teacher from '../models/Teacher.js';
-
+const isProduction = process.env.NODE_ENV === "production";
 // signup controller
 
 export async function signup(req,res){
@@ -58,15 +58,15 @@ export async function signup(req,res){
         res.cookie("jwt", token,{
             maxAge: 7*24*60*60*1000,
             httpOnly: true,
-            sameSite:  "none",
-            secure: true    //process.env.NODE_ENV === "production"
+            sameSite:  isProduction ? "none" : "lax",
+            secure: isProduction 
         })
 
         res.cookie("role",role,{
             httpOnly: true,
             maxAge: 7*24*60*60*1000,
-            sameSite: "none",
-            secure: true    //process.env.NODE_ENV === "production"
+            sameSite:  isProduction ? "none" : "lax",
+            secure: isProduction
         })
 
         res.status(201).json({
@@ -160,8 +160,8 @@ export async function login(req,res){
         res.cookie(key, value, {
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            sameSite: "none",
-            secure: true    //process.env.NODE_ENV === "production",
+            sameSite:  isProduction ? "none" : "lax",
+            secure: isProduction
         });
         }
 
@@ -352,8 +352,8 @@ export async  function sendOtp(req, res){
         res.cookie("schema",schema,{
             httpOnly: true,
             maxAge: 5*60*1000,
-            sameSite: "strict",
-            secure: process.env.NODE_ENV === "production"
+            sameSite:  isProduction ? "none" : "lax",
+            secure: isProduction
         })
         res.status(200).json({
             success: true,
@@ -416,8 +416,8 @@ export async function verifyOtp (req,res) {
         res.cookie("email",email,{
             httpOnly: true,
             maxAge: 5*60*1000,
-            sameSite: "strict",
-            secure: process.env.NODE_ENV === "production"
+            sameSite:  isProduction ? "none" : "lax",
+            secure: isProduction
         })
 
         res.status(201).json({
