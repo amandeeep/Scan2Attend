@@ -183,7 +183,7 @@ const SignUpPage = () => {
                             <h2 className="text-xl font-semibold">Connect with success partners worldwide</h2>
                             <p className="opacity-70">
                                 Take attendance seamlessly with cutting-edge face recognition.
-             Fast, secure, and reliable.
+                                Fast, secure, and reliable.
                             </p>
                             </div>
                         </div>

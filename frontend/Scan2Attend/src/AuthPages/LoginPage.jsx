@@ -142,7 +142,6 @@ const LoginPage = () => {
 
                                     {/* button for login  */}
                                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                                        <Link to='/college/dashboard'>@</Link>
                                     <button type="submit" className="btn btn-primary flex-1" disabled={isPending}>
                                         {isPending ? (
                                             <>

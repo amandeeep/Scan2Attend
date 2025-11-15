@@ -1,7 +1,7 @@
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
-import {Link, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import {otpSend} from '../lib/api'
 
 const ForgotPasswordPage = () => {
@@ -97,7 +97,7 @@ const ForgotPasswordPage = () => {
                                     </div>
 
                                     {/* this is button with code to make one of the option required */}
-                                    <Link to='/otp'>@</Link>
+                                    
                                     <button type="submit" className="btn btn-primary w-full" disabled={isPending}>
                                         {isPending ? (
                                             <>

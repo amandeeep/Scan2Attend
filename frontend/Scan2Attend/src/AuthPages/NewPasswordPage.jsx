@@ -1,7 +1,7 @@
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
-import {Link, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { resetPass } from '../lib/api';
 const NewPasswordPage = () => {
     const [newPassword, setNewPassword] = useState("");
@@ -99,7 +99,7 @@ const NewPasswordPage = () => {
                                     </div>
 
                                     {/* this is button  */}
-                                    <Link to='/'>@</Link>
+                                    
                                     <button type="submit" className="btn btn-primary w-full" disabled={isPending}>
                                         {isPending ? (
                                             <span className="loading loading-spinner loading-xs">Updating...</span>
