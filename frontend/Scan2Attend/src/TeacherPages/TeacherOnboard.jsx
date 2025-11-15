@@ -70,7 +70,6 @@ const TeacherOnboard = () => {
     fetchProfile();
   }, []);
   
-  // FILE SELECT + PREVIEW
   const handleImageSelect = (event) => {
     const file = event.target.files[0];
 
@@ -163,7 +162,6 @@ const TeacherOnboard = () => {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* PROFILE PIC */}
             <div className="flex flex-col items-center space-y-4">
               <div className="size-32 rounded-full bg-base-300 overflow-hidden">
                 {formState.profilePic ? (
@@ -179,7 +177,6 @@ const TeacherOnboard = () => {
                 )}
               </div>
 
-              {/* UPLOAD BUTTON */}
               <label className="btn btn-outline flex items-center gap-2 cursor-pointer">
                 <Upload size={18} />
                 Upload Image
@@ -191,7 +188,6 @@ const TeacherOnboard = () => {
                 />
               </label>
 
-              {/* RANDOM AVATAR */}
               <button
                 type="button"
                 onClick={handleRandomAvatar}
@@ -202,21 +198,18 @@ const TeacherOnboard = () => {
               </button>
             </div>
 
-            {/* SUCCESS */}
             {success && (
               <div className="alert alert-success">
                 <span>{success}</span>
               </div>
             )}
 
-            {/* ERROR */}
             {error && (
               <div className="alert alert-error">
                 <span>{error}</span>
               </div>
             )}
 
-            {/* FORM INPUTS */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="form-control">
                 <label className="label">Full Name</label>

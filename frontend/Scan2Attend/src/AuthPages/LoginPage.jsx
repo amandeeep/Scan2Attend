@@ -1,79 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { Croissant, ShipWheel } from 'lucide-react';
+import { useState } from 'react'
+import { GraduationCap } from 'lucide-react';
 import {Link, useNavigate} from 'react-router-dom'
 import { login } from '../lib/api';
 import img from '../Images/BoyAtten.png'
 import google from '../Images/GoogleLogo.png'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {addUser, removeUser} from '../store/userSlice'
 import { setAuth, setOnboard, setIsRole, removeAuth } from '../store/authSlice';
-import { profile } from '../lib/api';
 
 const LoginPage = () => {
-    // const [email, setEmail] = useState("");
-    // const [password, setPassword] = useState("")
-    // const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!    
     const [loginData, setLoginData] = useState({
         email:"",
         password: "",
         role: '',
-        // isLogging: ""
     })
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [isPending, setIsPending] = useState(null);
     const [error, setError] = useState(false);
-    // const user = useSelector((store) => (store.user))
-    // const board = useSelector((store) => (store.auth))
-    // useEffect(() =>{
-    //    const fetch = async () => {
-    //     try{
-    //         const res = await profile();
-    //         console.log(res);
-    //         dispatch(addUser(res.user));
-    //         // dispatch(setOnboard(true));
-    //         dispatch(setAuth(true))
-    //     }catch(err){
-    //         console.log("error in useEffect of login page "+err.message);
-    //     }
-        
-
-    //    } 
-    //    fetch()
-    // },[])
-    // console.log("user store "+ user.isOnboard)
-    // console.log("auth store "+ auth.setAuth)
-    // console.log("board store "+ auth.setOnboard)
-
-    // const handleLogin = async (e) => {
-    // e.preventDefault();
-    // try {
-    //     setIsPending(true);
-    //     const res = await login(loginData); 
-    //     // dispatch(addUser(res));
-    //     // dispatch(setAuth(true));
-    //     // dispatch(setOnboard(true));
-    //     console.log(res.role + res.isOnboard);
-    //     console.log("here isOnboard value "+res.message);
-    //     if(res.role === 'student'){
-    //         if(res.isOnboard == false) navigate("/student/onboard");
-    //         else navigate('/student')
-    //     }
-    //     else if(res.role === 'teacher'){
-    //         if(res.isOnboard == false) {navigate("/teacher/onboard"); console.log(res.isOnboard)}
-    //         else if(res.isOnboard == true) navigate('/teacher');
-    //     }
-    //     else if(res.role === 'college') navigate("/college");
-    //     //navigate("/student/onboard");
-    // } catch (error) {
-    //     console.error("Login failed:", error.message); 
-    //     setError(error.response?.data?.message || "Login failed");
-        
-    // }
-    // finally{
-    //     setIsPending(false)
-    // }
-    // };
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -88,24 +32,18 @@ const LoginPage = () => {
                 dispatch(setOnboard(res.isOnboard));
                 dispatch(setIsRole(res.role));
                 dispatch(addUser(res.userDetails));
-                // if(res.isOnboard == false) navigate('/student/onboard');
-                // else navigate('/student')
             }
             else if(res.role === 'teacher'){
                 dispatch(setAuth(true));
                 dispatch(setOnboard(res.isOnboard));
                 dispatch(setIsRole(res.role));
                 dispatch(addUser(res.userDetails));
-                // if(res.isOnboard == false) navigate('/teacher/onboard');
-                // else navigate('/teacher')
             }
             else if(res.role === 'college'){
                 dispatch(setAuth(true));
                 dispatch(setOnboard(res.isOnboard));
                 dispatch(setIsRole(res.role));
                 dispatch(addUser(res.userDetails));
-                // if(res.isOnboard == false) navigate('/college/onboard');
-                // else navigate('/college')
             }
         }catch(err){
             console.error("Login failed:", error.message);
@@ -128,7 +66,7 @@ const LoginPage = () => {
                     <div className='w-full lg:w-1/2 p-4 sm:p-8 flex flex-col'>
                     {/* logo of the website */}
                     <div className="mb-4 flex items-center justify-start gap-2">
-                        <Croissant className="size-9 text-primary" />
+                        <GraduationCap className="size-9 text-primary" />
                             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary  tracking-wider">
                             Scan2Attend
                             </span>
@@ -270,134 +208,3 @@ const LoginPage = () => {
 }
 
 export default LoginPage
-
-
-
-
-
-// import React, { useState } from 'react'
-// import { Croissant } from 'lucide-react';
-// import { Link } from 'react-router-dom'
-// import img from '../Images/BoyAtten.png'
-
-// const LoginPage = () => {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("")
-//   const [isLogging, setIsLogging] = useState("") // hook for login state
-
-//   const handleLogin = (e) => {
-//     e.preventDefault(); // fixed bug
-//   }
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-purple-200 to-purple-300 p-4">
-//       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
-        
-//         {/* Left side (form) */}
-//         <div className="w-full lg:w-1/2 p-8 flex flex-col justify-center">
-//           {/* Logo */}
-//           <div className="mb-6 flex items-center gap-3">
-//             <Croissant className="size-10 text-purple-600" />
-//             <span className="text-3xl font-bold font-mono bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">
-//               Scan2Attend
-//             </span>
-//           </div>
-
-//           {/* Form */}
-//           <form onSubmit={handleLogin} className="space-y-6">
-//             <div>
-//               <h2 className="text-2xl font-bold text-gray-800">Welcome Back 👋</h2>
-//               <p className="text-sm text-gray-500">
-//                 Please login to continue
-//               </p>
-//             </div>
-
-//             {/* Email */}
-//             <div>
-//               <label className="block text-sm font-medium mb-1">Email</label>
-//               <input
-//                 type="email"
-//                 placeholder="hello@example.com"
-//                 className="input input-bordered w-full rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             {/* Password + Forgot Password link */}
-//             <div>
-//               <div className="flex items-center justify-between mb-1">
-//                 <label className="block text-sm font-medium">Password</label>
-//                 <Link
-//                   to="/forgotPasswordPage"
-//                   className="text-sm text-purple-600 hover:underline hover:text-purple-800 transition"
-//                 >
-//                   Forgot Password?
-//                 </Link>
-//               </div>
-//               <input
-//                 type="password"
-//                 placeholder="••••••••"
-//                 className="input input-bordered w-full rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             {/* Login Button */}
-//             <button
-//               type="submit"
-//               className="btn btn-primary w-full py-3 rounded-lg font-semibold tracking-wide shadow-md hover:shadow-lg transition"
-//               disabled={isLogging}
-//             >
-//               {isLogging ? (
-//                 <>
-//                   <span className="loading loading-spinner loading-sm"></span>
-//                   <span className="ml-2">Signing in...</span>
-//                 </>
-//               ) : (
-//                 "Sign In"
-//               )}
-//             </button>
-
-//             {/* Signup Redirect */}
-//             <div className="text-center mt-4">
-//               <p className="text-sm text-gray-600">
-//                 Don’t have an account?{" "}
-//                 <Link to="/signup" className="text-purple-600 font-semibold hover:underline">
-//                   Create one
-//                 </Link>
-//               </p>
-//             </div>
-//           </form>
-//         </div>
-
-//         {/* Right side (illustration) */}
-//         <div className="hidden lg:flex w-full lg:w-1/2 bg-gradient-to-br from-purple-50 to-purple-200 items-center justify-center">
-//           <div className="max-w-md p-8 text-center">
-//             {/* Illustration */}
-//             <div className="relative aspect-square max-w-xs mx-auto">
-//               <img
-//                 src={img}
-//                 alt="Login Illustration"
-//                 className="w-full h-full object-contain drop-shadow-lg"
-//               />
-//             </div>
-
-//             <h2 className="text-xl font-semibold mt-6 text-gray-800">
-//               Connect, Learn & Grow
-//             </h2>
-//             <p className="text-gray-600 text-sm mt-2 leading-relaxed">
-//               Take attendance seamlessly with cutting-edge face recognition.
-//               Fast, secure, and reliable.
-//             </p>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default LoginPage

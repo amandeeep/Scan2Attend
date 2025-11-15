@@ -7,8 +7,7 @@ const authRouter = express.Router();
 authRouter.post('/login', login)
 authRouter.post('/signup', signup)
 authRouter.post('/logout', logout)
-// authRouter.post('/studentOnboard',authMiddleware, studentOnboard)
-authRouter.post('/onboard', authMiddleware, uploadImage.single("profilePic"), onboard) // vvvvv
+authRouter.post('/onboard', authMiddleware, uploadImage.single("profilePic"), onboard)
 authRouter.post('/send-otp', sendOtp)
 authRouter.post('/verify-otp', verifyOtp)
 authRouter.post('/reset-password', resetPassword)

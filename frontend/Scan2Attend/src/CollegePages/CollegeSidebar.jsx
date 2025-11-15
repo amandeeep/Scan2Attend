@@ -1,7 +1,7 @@
 import { removeAuth } from "../store/authSlice";
 import { useDispatch } from "react-redux";
 import { X, Home,   LogOut,  BookOpen, GraduationCap,  UserPen, ClipboardCheck, } from 'lucide-react';
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import {  useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../lib/api";
 import { useSelector } from "react-redux";
 import { removeUser } from "../store/userSlice";
@@ -50,13 +50,10 @@ const StudentSidebar = () => {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       
       <div className="drawer-side">
-        {/* Overlay */}
         <label htmlFor="my-drawer" className="drawer-overlay"></label>
 
-        {/* Sidebar Content */}
         <div className="w-64 sm:w-72 lg:w-80 bg-base-100 min-h-full flex flex-col shadow-2xl">
           
-          {/* Header Section */}
           <div className="p-4 sm:p-6 border-b border-base-300">
             <div className="flex items-center justify-between mb-4">
               {/* Logo */}

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Croissant } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { GraduationCap } from "lucide-react";
 import img from "../Images/ForgotPassword.png";
 import { Link, useNavigate} from "react-router-dom";
 import { verifyOtp, otpSend } from "../lib/api";
@@ -86,7 +86,7 @@ const OtpPage = () => {
         <div className="w-full lg:w-1/2 p-6 flex flex-col">
           {/* Logo */}
           <div className="mb-6 flex items-center gap-2">
-            <Croissant className="size-9 text-primary" />
+            <GraduationCap className="size-9 text-primary" />
             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
               Scan2Attend
             </span>

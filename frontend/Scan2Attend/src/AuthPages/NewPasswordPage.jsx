@@ -1,7 +1,6 @@
-import React from 'react'
 import img from "../Images/ForgotPassword.png"
 import { useState } from 'react';
-import { Croissant } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
 import {Link, useNavigate} from 'react-router-dom'
 import { resetPass } from '../lib/api';
 const NewPasswordPage = () => {
@@ -36,11 +35,6 @@ const NewPasswordPage = () => {
         finally{
             setIsPending(false);
         }
-
-    //setError('Both field should be filled and matches'); // set this to setError('') when backend code comes
-    
-
-    // alert(`Submitted: Both field should be filled and matches`);  // also uncoment this
     }
   return (
     <div>
@@ -54,7 +48,7 @@ const NewPasswordPage = () => {
                 <div className='w-full lg:w-1/2 p-4 sm:p-8 flex flex-col'>
                     {/* logo section */}
                     <div className="mb-4 flex items-center justify-start gap-2">
-                        <Croissant className="size-9 text-primary" />
+                        <GraduationCap className="size-9 text-primary" />
                             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary  tracking-wider">
                             Scan2Attend
                             </span>

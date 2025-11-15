@@ -9,12 +9,9 @@ import OtpPage from './AuthPages/OtpPage'
 import { CollegeBody } from './CollegePages/CollegeBody'
 import StudentBody from './StudentPages/StudentBody';
 import StudentOnboard from './StudentPages/StudentOnboard';
-import {profile} from './lib/api'
 import { addUser, loadUser } from './store/userSlice';
-import { setAuth, setOnboard } from './store/authSlice';
 import StudentAttendanceView from './StudentPages/StudentAttendanceView';
 import TeacherMarkAttendance from './TeacherPages/TeacherMarkAttendance';
-import Basic from './TeacherPages/Basic';
 import AddSubNEnrollStud from './TeacherPages/AddSubNEnrollStud';
 import TeacherDashboard from './TeacherPages/TeacherDashboard';
 import TeacherBody from './TeacherPages/TeacherBody';
@@ -83,16 +80,6 @@ console.log("userData in app.jsx ",userData);
       </Routes>
       </div>
      </>
-
-
-    //////////////////////
-
-
-    // <div className='min-h-screen' data-theme={theme}>
-    // <TeacherAttendanceView/>
-    // {/* <StudentAttendanceView/> */}
-    // </div>
-
   )
 }
 

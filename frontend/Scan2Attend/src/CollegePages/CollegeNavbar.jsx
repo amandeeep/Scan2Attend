@@ -1,12 +1,9 @@
 import ThemeSelector  from '../components/ThemeSelector';
-import { Croissant, GraduationCap } from 'lucide-react';
-import { Link, useNavigate } from "react-router-dom";
+import { GraduationCap } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 import { removeAuth } from '../store/authSlice';
-
 import { useDispatch, useSelector } from 'react-redux';
-
 import { removeUser } from '../store/userSlice';
-import AddUser from '../components/AddUser';
 
 
 const StudentNavbar = () => {

@@ -1,106 +1,8 @@
-// import {
-//   Croissant,
-//   House,
-//   Settings,
-//   HandHelping,
-//   LogOut,
-//   SquareX,
-// } from "lucide-react";
-// import ThemeSelector from '../components/ThemeSelector';
-// import { Link, useNavigate} from "react-router-dom";
-// import {logout} from '../lib/api';
-// import { useDispatch } from "react-redux";
-// import { removeAuth } from "../store/authSlice";
-
-// const Sidebar = () => {
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const handleLogout = async()=>{
-//     try{
-//       const res = await logout();
-//       dispatch(removeAuth())
-//       navigate('/')
-//     }catch(err){
-//       console.log("erro in logout "+err.message)
-//     }
-//   }
-//   return (
-//     <div className="drawer z-50">
-//       {/* Sidebar toggle control */}
-//       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      
-//       {/* Sidebar content */}
-//       <div className="drawer-side">
-//         <label htmlFor="my-drawer" className="drawer-overlay"></label>
-
-//         <div className="w-80 bg-base-200 min-h-full p-4 relative flex flex-col">
-          
-//           {/* Close Button */}
-//           <label
-//             htmlFor="my-drawer"
-//             className="btn btn-ghost absolute top-2 right-1"
-//           >
-//             <SquareX className="w-6 h-6" />
-//           </label>
-
-//           {/* Logo / Title */}
-//           <div className="mb-6 flex items-center gap-2 p-4 rounded-lg border border-gray-300 shadow-2xl">
-//             <Croissant className="w-9 h-9 text-primary" />
-//             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-wider">
-//               Scan2Attend
-//             </span>
-//           </div>
-
-//           {/* Navigation Items */}
-//           <ul className="menu space-y-2 text-xl font-semibold">
-//             <li>
-//               <Link to="/home" className="flex items-center gap-3">
-//                 <House /> Home
-//               </Link>
-//             </li>
-
-//             <li>
-//               <Link to="/settings" className="flex items-center gap-3">
-//                 <Settings /> Settings
-//               </Link>
-//             </li>
-
-//             <li>
-//               <Link to="/help" className="flex items-center gap-3">
-//                 <HandHelping /> Help
-//               </Link>
-//             </li>
-
-//             <li>
-//               <ThemeSelector />
-//             </li>
-//           </ul>
-
-//           {/* Logout Button */}
-//           <div className="mt-auto font-semibold text-xl">
-//             <button
-//               onClick={handleLogout}
-//               className="btn btn-error w-full gap-2 flex items-center justify-center"
-//             >
-//               <LogOut />
-//               Logout
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Sidebar;
-
-
-
 import React from "react";
 import { removeAuth } from "../store/authSlice";
 import { useDispatch } from "react-redux";
-import { X, Home, Settings, HelpCircle, LogOut, User, BookOpen, GraduationCap, Info, UserPen, ClipboardCheck, UserPlus, ChevronRight,  } from 'lucide-react';
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { X, Home, LogOut, BookOpen, GraduationCap, UserPen, ClipboardCheck } from 'lucide-react';
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../lib/api";
 import { useSelector } from "react-redux";
 import { removeUser } from "../store/userSlice";
@@ -149,13 +51,10 @@ const StudentSidebar = () => {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       
       <div className="drawer-side">
-        {/* Overlay */}
         <label htmlFor="my-drawer" className="drawer-overlay"></label>
 
-        {/* Sidebar Content */}
         <div className="w-64 sm:w-72 lg:w-80 bg-base-100 min-h-full flex flex-col shadow-2xl">
-          
-          {/* Header Section */}
+
           <div className="p-4 sm:p-6 border-b border-base-300">
             <div className="flex items-center justify-between mb-4">
               {/* Logo */}
@@ -177,7 +76,6 @@ const StudentSidebar = () => {
               </label>
             </div>
 
-            {/* User Info Card */}
             <div className="bg-base-200 rounded-lg p-3 sm:p-4">
               <div className="flex items-center gap-3">
                 <div className="avatar placeholder">
@@ -199,7 +97,6 @@ const StudentSidebar = () => {
             </div>
           </div>
 
-          {/* Navigation Menu */}
           <div className="flex-1 overflow-y-auto p-4">
             <nav className="space-y-1">
               {menuItems.map((item) => {
@@ -229,7 +126,6 @@ const StudentSidebar = () => {
               })}
             </nav>
 
-            {/* Quick Stats */}
             <div className="mt-6 p-4 bg-base-200 rounded-lg">
               <h4 className="text-xs sm:text-sm font-semibold text-base-content/70 mb-3">Quick Stats</h4>
               <div className="space-y-2">
@@ -249,9 +145,8 @@ const StudentSidebar = () => {
             </div>
           </div>
 
-          {/* Footer Section */}
           <div className="p-4 border-t border-base-300 space-y-3">
-            {/* App Version */}
+
             <div className="text-center">
               <p className="text-xs text-base-content/50">Version 1.0.0</p>
             </div>

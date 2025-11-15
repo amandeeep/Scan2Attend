@@ -3,9 +3,7 @@ import ThemeSelector  from '../components/ThemeSelector';
 import { Croissant, GraduationCap } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { removeAuth } from '../store/authSlice';
-import StudentOnboard from '../StudentPages/StudentOnboard';
 import { useDispatch, useSelector } from 'react-redux';
-import StudentAttendanceView from './StudentAttendanceView';
 import { removeUser } from '../store/userSlice';
 
 

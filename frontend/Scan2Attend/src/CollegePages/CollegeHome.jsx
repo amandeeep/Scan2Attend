@@ -10,10 +10,6 @@ const CollegeHome = () => {
             <span className='text-3xl font-bold font-mono bg-clip-text tracking-wider'>Dashboard</span>
             <span><AddUser/></span> 
         </div>
-        <div>
-            {/* <CollegeStudentTable/> */}
-            {/* <Table/> */}
-        </div>
       </div>
     </>
   )

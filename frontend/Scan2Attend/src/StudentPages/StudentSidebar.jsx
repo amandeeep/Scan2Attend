@@ -1,8 +1,7 @@
-import React from "react";
 import { removeAuth } from "../store/authSlice";
 import { useDispatch } from "react-redux";
-import { X, Home, Settings, HelpCircle, LogOut, User, BookOpen, GraduationCap } from 'lucide-react';
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { X, Home, LogOut, User, GraduationCap } from 'lucide-react';
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../lib/api";
 import { useSelector } from "react-redux";
 import { removeUser } from "../store/userSlice";
@@ -15,8 +14,12 @@ const StudentSidebar = () => {
   const fullName = userData?.fullName || "Student Name";
   const email = userData?.email || "example@mail.com";
   const semester = userData?.semester || '1';
-  const [first, last] = fullName.split(" ");
-  const initials = first[0] + last[0];
+  const getInitials = (name) => {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+  const initials = getInitials(fullName);
   const profilePic = userData?.profilePic;
   const subjectCount = userData?.attendanceDetails?.subjectDetails?.length || 0;
   const percentage = userData?.attendanceDetails?.percentage || 0;
@@ -41,11 +44,8 @@ const StudentSidebar = () => {
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/student" },
-    // { icon: BookOpen, label: "My Subjects", path: "/student/subjects" },
     { icon: GraduationCap, label: "Attendance", path: "/student/attendance-view" },
     { icon: User, label: "Profile", path: "/student/onboard" },
-    // { icon: Settings, label: "Settings", path: "/student/settings" },
-    // { icon: HelpCircle, label: "Help & Support", path: "/student/help" },
   ];
 
   return (
@@ -53,13 +53,9 @@ const StudentSidebar = () => {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       
       <div className="drawer-side">
-        {/* Overlay */}
         <label htmlFor="my-drawer" className="drawer-overlay"></label>
-
-        {/* Sidebar Content */}
         <div className="w-64 sm:w-72 lg:w-80 bg-base-100 min-h-full flex flex-col shadow-2xl">
           
-          {/* Header Section */}
           <div className="p-4 sm:p-6 border-b border-base-300">
             <div className="flex items-center justify-between mb-4">
               {/* Logo */}
@@ -81,7 +77,6 @@ const StudentSidebar = () => {
               </label>
             </div>
 
-            {/* User Info Card */}
             <div className="bg-base-200 rounded-lg p-3 sm:p-4">
               <div className="flex items-center gap-3">
                 <div className="avatar placeholder">
@@ -103,7 +98,6 @@ const StudentSidebar = () => {
             </div>
           </div>
 
-          {/* Navigation Menu */}
           <div className="flex-1 overflow-y-auto p-4">
             <nav className="space-y-1">
               {menuItems.map((item) => {

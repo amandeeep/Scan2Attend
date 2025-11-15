@@ -1,16 +1,11 @@
-import React, { useState } from 'react'
-import { Croissant, ShipWheel } from 'lucide-react';
+import { useState } from 'react'
+import { GraduationCap } from 'lucide-react';
 import {Link, useNavigate} from 'react-router-dom'
 import { useDispatch } from 'react-redux';
-import {addUser} from '../store/userSlice';
 import {signup} from '../lib/api';
 import img from '../Images/SignUp.png'
-const SignUpPage = () => {
-    // const [name, setName] = useState("")
-    // const [email, setEmail] = useState("");
-    // const [password, setPassword] = useState("")
-    // const [isLogging, setIsLogging] = useState("") // create a hook to setlogin letter on imp!!!!
 
+const SignUpPage = () => {
     const [signupData, setSignupData] = useState({
         fullName: "",
         email: "",
@@ -26,8 +21,7 @@ const SignUpPage = () => {
         try{
             setIsPending(true);
             const res = await signup(signupData);
-            dispatch(addUser(res));
-            navigate("/college/dashboard")
+            navigate("/")
         }
         catch(err){
             console.log("Signup failed "+ err.message);
@@ -47,7 +41,7 @@ const SignUpPage = () => {
                     <div className='w-full lg:w-1/2 p-4 sm:p-8 flex flex-col'>
                     {/* logo of the website */}
                     <div className="mb-4 flex items-center justify-start gap-2">
-                        <Croissant className="size-9 text-primary" />
+                        <GraduationCap className="size-9 text-primary" />
                             <span className="text-3xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary  tracking-wider">
                             Scan2Attend
                             </span>

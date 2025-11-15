@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CameraIcon, ShuffleIcon, CircleArrowLeft, Upload, Camera } from "lucide-react";
+import { CameraIcon, ShuffleIcon, CircleArrowLeft, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profile, onboard } from "../lib/api";
 import { useDispatch } from "react-redux";
@@ -56,8 +56,6 @@ const CollegeOnboard = () => {
     fetchProfile();
   }, []);
 
-  // -----------------------------------------
-  // FILE SELECT
   const handleImageSelect = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -73,8 +71,6 @@ const CollegeOnboard = () => {
     }));
   };
 
-  // -----------------------------------------
-  // RANDOM AVATAR
   const handleRandomAvatar = () => {
     const idx = Math.floor(Math.random() * 100) + 1;
     const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
@@ -87,8 +83,6 @@ const CollegeOnboard = () => {
     }));
   };
 
-  // -----------------------------------------
-  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -152,8 +146,6 @@ const CollegeOnboard = () => {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
-            {/* PROFILE PIC */}
             
             <div className="flex flex-col items-center space-y-4">
               <div className="size-32 rounded-full bg-base-300 overflow-hidden shadow">
@@ -172,7 +164,7 @@ const CollegeOnboard = () => {
               
               
 
-              {/* UPLOAD BUTTON */}
+              
               <label className="btn btn-outline gap-2 cursor-pointer">
                 <Upload size={18} />
                 Upload Image
@@ -184,28 +176,28 @@ const CollegeOnboard = () => {
                 />
               </label>
 
-              {/* RANDOM */}
+              
               <button type="button" onClick={handleRandomAvatar} className="btn btn-accent">
                 <ShuffleIcon className="size-4 mr-2" />
                 Random Avatar
               </button>
             </div>
 
-            {/* SUCCESS */}
+            
             {success && (
               <div className="alert alert-success">
                 <span>{success}</span>
               </div>
             )}
 
-            {/* ERROR */}
+            
             {error && (
               <div className="alert alert-error">
                 <span>{error}</span>
               </div>
             )}
 
-            {/* FORM INPUTS */}
+            
             <div className="grid sm:grid-cols-2 gap-4">
 
               <div className="form-control">

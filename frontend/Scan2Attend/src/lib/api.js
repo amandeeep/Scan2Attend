@@ -47,7 +47,7 @@ export const logout = async () => {
     return res.data;
 }
 
-// studentOnboard
+// Onboard
 
 export const onboard = async (onboardData) => {
     const res = await axiosInstance.post('/auth/onboard', onboardData);

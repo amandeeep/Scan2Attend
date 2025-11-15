@@ -5,7 +5,6 @@ import {transporter }from '../config/mail.js';
 import {redis} from '../config/redis.js'
 import { uploadOnCloudinary } from '../config/cloudinary.js';
 import 'dotenv/config'
-import crypto from 'crypto'
 import bcrypt from 'bcryptjs';
 import College from '../models/College.js';
 import Teacher from '../models/Teacher.js';
@@ -45,9 +44,6 @@ export async function signup(req,res){
         const idx = Math.floor(Math.random()*100)+1;
         const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
-        // const newStudent = await Student.create({
-        //     email, fullName, password, profilePic: randomAvatar
-        // })
         let newUser;
         if (role === 'student') {
             newUser = await Student.create({ email, fullName, password, profilePic: randomAvatar, isOnboard: false });
@@ -56,11 +52,6 @@ export async function signup(req,res){
         } else if (role === 'college') {
             newUser = await College.create({ email, fullName, password, profilePic: randomAvatar, isOnboard: false });
         }
-        // password is automatically hased in database
-
-        // const token = jwt.sign(
-        //     {userId: newStudent._id, role : "student"}, process.env.JWT_SECRET_KEY, {expiresIn: '7d'}
-        // )
 
         const token = jwt.sign({ userId: newUser._id, role }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
 
@@ -194,8 +185,6 @@ export async function login(req,res){
     }
 }
 
-
-
 // logout controller
 
 export function logout(req,res){
@@ -206,60 +195,7 @@ export function logout(req,res){
     })
 }
 
-
-// student onboard
-
-// export async function studentOnboard (req, res) {
-//     try{
-//         const userId = req.user._id;
-//         const {fullName, address, semester, department, rollNumber, gender,age,email, studentID, contactNumber,profilePic} = req.body;
-//         if(!fullName || !address || !semester || !rollNumber || !gender || !age || !email || !studentID || !contactNumber || !profilePic){
-//             return res.status(400).json({
-//                 message: "All fields are required",
-//                 missingFields: [
-//                     !fullName && "fullName",
-//                     !address && "address",
-//                     !semester && "semester",
-//                     !department && "department",
-//                     !gender && "gender",
-//                     !age && "age",
-//                     !email && "email",
-//                     !rollNumber && "rollNumber",
-//                     !studentID && "studentID",
-//                     !contactNumber && "contactNumber",
-                    
-//                     !profilePic && "profilePic"
-//                 ].filter(Boolean)
-//             })
-
-//         }
-// // By default, findOneAndUpdate() returns the document as it was before update was applied. If you set new: true, findOneAndUpdate() will instead give you the object after update was applied.
-//         const update = await Student.findByIdAndUpdate(userId,{
-//             ...req.body,
-//             isOnboard: true
-//         },{new: true})
-//         if(!update)  return res.status(404).json({
-//             message: "User not found"
-//         })
-//         return res.status(202).json({
-//             success: true,
-//             message: "Successfully Onboard",
-//             user: update
-//         })
-//     }
-//     catch(err){
-//         console.log("error in student onboard" + err.message);
-//         res.status(500).json({
-//             success: false,
-//             message: "Internal server error"+err.message
-//         })
-
-//     }
-// }
-
-
 // onboard
-
 
 export async function onboard(req, res) {
   try {
@@ -268,7 +204,7 @@ export async function onboard(req, res) {
     const body = req.body;
 
     // Profile image file from multer
-    const uploadedFile = req.file; //vvv
+    const uploadedFile = req.file;
 
     const requiredFields = {
       student: [
@@ -301,7 +237,7 @@ export async function onboard(req, res) {
     // profilePic is always required 
     if (!uploadedFile && !body.profilePic) {
       missingFields.push("profilePic");
-    } //vvvv
+    }
 
     if (missingFields.length > 0) {
       return res.status(400).json({
@@ -441,7 +377,6 @@ export async function verifyOtp (req,res) {
         })
 
         const email = await redis.get(`email:${otp}`);
-        // const user = await Student.findOne({email});
         const [student, college, teacher] = await Promise.all([
             Student.findOne({ email }),
             College.findOne({ email }),
@@ -462,10 +397,6 @@ export async function verifyOtp (req,res) {
         })
         const schema = req.cookies.schema;
         user.isOtpVerified = true;
-        // await user.save()  // Load full doc, modify, validate entire doc, save
-
-
-        // by below method => Update only specified fields in DB
         if(schema === 'student'){
             await Student.updateOne(
             { email },
@@ -482,9 +413,6 @@ export async function verifyOtp (req,res) {
         await redis.del(`otp:${email}`);
         await redis.del(`email:${otp}`);
         
-
-        
-
         res.cookie("email",email,{
             httpOnly: true,
             maxAge: 5*60*1000,
@@ -525,7 +453,6 @@ export async function resetPassword (req, res) {
     if (!email) {
     return res.status(400).json({ message: "Invalid or expired reset token" });
     }
-    // const user = await Student.findOne({email});
     const [student, college, teacher] = await Promise.all([
         Student.findOne({ email }),
         College.findOne({ email }),
@@ -552,8 +479,7 @@ export async function resetPassword (req, res) {
                 $set: {
                     password: hashPassword,
                     isOtpVerified:false
-                }
-                
+                } 
             }
         )
     }else if(schema === 'college'){
@@ -563,8 +489,7 @@ export async function resetPassword (req, res) {
                 $set: {
                     password: hashPassword,
                     isOtpVerified:false
-                }
-                
+                }  
             }
         )
     }else if(schema === 'teacher'){
@@ -575,7 +500,6 @@ export async function resetPassword (req, res) {
                     password: hashPassword,
                     isOtpVerified:false
                 }
-                
             }
         )
     }else{
