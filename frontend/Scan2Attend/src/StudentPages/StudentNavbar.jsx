@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { removeAuth } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeUser } from '../store/userSlice';
-
+import { logout } from '../lib/api';
 
 const StudentNavbar = () => {
   const dispatch = useDispatch();

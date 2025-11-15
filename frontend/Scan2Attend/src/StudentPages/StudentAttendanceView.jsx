@@ -93,7 +93,7 @@ const StudentAttendanceView = () => {
   );
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4">
+    <div className="bg-base-200 p-3 sm:p-4 md:p-6 space-y-4">
 
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between flex-wrap">
@@ -197,7 +197,7 @@ const StudentAttendanceView = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 justify-center sm:justify-start items-center p-4 bg-base-200 rounded-lg">
+      <div className="flex flex-wrap gap-4 justify-center sm:justify-start items-center p-4 bg-base-100 shadow rounded-lg">
         <span className="text-sm font-semibold">Legend:</span>
         <div className="flex items-center gap-2">
           <span className="inline-block w-6 h-6 bg-green-200 rounded-md border border-green-400"></span>
