@@ -8,6 +8,7 @@ import 'dotenv/config'
 import bcrypt from 'bcryptjs';
 import College from '../models/College.js';
 import Teacher from '../models/Teacher.js';
+import { resend } from '../config/resend.js';
 const isProduction = process.env.NODE_ENV === "production";
 // signup controller
 
@@ -350,32 +351,56 @@ export async function sendOtp(req, res) {
       redis.set(cooldownKey, "1", { ex: 60 })
     ]);
 
-    try {
-      const mailResponse = await transporter.sendMail({
-        from: `Scan2Attend <${process.env.FAKE_EMAIL}>`,
-        to: user.email,
-        subject: "Scan2Attend OTP Verification ✔",
-        html: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h2>Your OTP Code</h2>
-            <p style="font-size: 18px;">
-              <strong>${otp}</strong>
-            </p>
-            <p>This OTP will expire in <strong>5 minutes</strong>.</p>
-            <hr/>
-            <p>If you did not request this, please ignore the message.</p>
-          </div>
-        `
-      });
+    // try {
+    //   const mailResponse = await transporter.sendMail({
+    //     from: `Scan2Attend <${process.env.FAKE_EMAIL}>`,
+    //     to: user.email,
+    //     subject: "Scan2Attend OTP Verification ✔",
+    //     html: `
+    //       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    //         <h2>Your OTP Code</h2>
+    //         <p style="font-size: 18px;">
+    //           <strong>${otp}</strong>
+    //         </p>
+    //         <p>This OTP will expire in <strong>5 minutes</strong>.</p>
+    //         <hr/>
+    //         <p>If you did not request this, please ignore the message.</p>
+    //       </div>
+    //     `
+    //   });
 
 
-    } catch (emailErr) {
-      console.error("Email Sending Error:", emailErr);
+    // } catch (emailErr) {
+    //   console.error("Email Sending Error:", emailErr);
 
+    //   return res.status(500).json({
+    //     success: false,
+    //     message: "Failed to send OTP email",
+    //     error: emailErr.message
+    //   });
+    // }
+
+    const emailResult = await resend.emails.send({
+      from: `Scan2Attend <${process.env.RESEND_SENDER_EMAIL}>`,
+      to: user.email,
+      subject: "Scan2Attend OTP Verification",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>Your OTP Code</h2>
+          <p style="font-size: 18px;">
+            <strong>${otp}</strong>
+          </p>
+          <p>This OTP will expire in <strong>5 minutes</strong>.</p>
+          <hr/>
+          <p>If you did not request this, please ignore the message.</p>
+        </div>
+      `
+    });
+
+    if (!emailResult) {
       return res.status(500).json({
         success: false,
-        message: "Failed to send OTP email",
-        error: emailErr.message
+        message: "Email service failed, please try again"
       });
     }
 
