@@ -1,7 +1,6 @@
 import Student from '../models/Student.js'
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-//import {transporter }from '../config/mail.js';
 import {redis} from '../config/redis.js'
 import { uploadOnCloudinary } from '../config/cloudinary.js';
 import 'dotenv/config'

@@ -155,7 +155,7 @@ export async function getAttendance (req, res) {
             const totalMarked = attendance.filter(r => r.status === "Present" || r.status === "Absent").length;
             const overallAttendance = totalMarked > 0 ? Math.round((totalPresent / totalMarked) * 100) : 0;
             const subjectCount = [...new Set(attendance.map(r => r.subjectCode))];
-            const updatedStudent = await Student.findOneAndUpdate(
+            const updatedStudent = await Student.updateOne(
               { studentID: req.user.studentID },
               {
                 $set: {
