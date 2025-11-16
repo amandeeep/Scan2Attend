@@ -5,6 +5,7 @@ export const transporter = nodemailer.createTransport({
     host: "smtp-relay.brevo.com",
     port: 587,
     secure: false, 
+    requireTLS: true,
     auth:{
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASS
