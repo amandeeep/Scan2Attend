@@ -65,7 +65,7 @@ export const profile = async () => {
 
 export const addUser = async (data) => {
     const res = await axiosInstance.post('/auth/addUser', data);
-    return res;
+    return res.data;
 }
 
 
