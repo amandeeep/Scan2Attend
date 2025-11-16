@@ -2,12 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const teacherSchema = new mongoose.Schema({
-    teacherId:{
-        type: String,
-        // required: true,
-        unique: true,
-        sparse: true
-    },
+    
     fullName:{
         type:String,
         required:true,
@@ -27,6 +22,11 @@ const teacherSchema = new mongoose.Schema({
     collegeObjectId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'College'
+    },
+    teacherId:{
+        type: String,
+        unique: true,
+        sparse: true
     },
     collegeId:{
         type: String,

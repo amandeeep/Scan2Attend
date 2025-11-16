@@ -2,12 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const collegeSchema = new mongoose.Schema({
-    collegeId:{
-        type: String,
-        // required: true,
-        unique: true,
-        sparse: true
-    },
+    
     fullName:{
         type: String,
         required: true,
@@ -44,7 +39,12 @@ const collegeSchema = new mongoose.Schema({
         unique: true,
         lowercase:true,
         trim: true,
-    }
+    },
+    collegeId:{
+        type: String,
+        unique: true,
+        sparse: true
+    },
 },{timestamps:true})
 
 collegeSchema.pre("save", async function(next){
