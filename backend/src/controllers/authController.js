@@ -300,79 +300,107 @@ export async function onboard(req, res) {
 
 // send otp
 
-export async  function sendOtp(req, res){
-    try{
-        const {email} = req.body;
-        if(!email) return res.status(400).json({
-            success: false,
-            message: "Email is required"
-        })
-        let user = await Student.findOne({ email });
-        let schema = "student";
-        if (!user) {
-        user = await College.findOne({ email });
-        schema = "college"
-        }
-
-        if (!user) {
-        user = await Teacher.findOne({ email });
-        schema = 'teacher'
-        }
-        if(!user) return res.status(400).json({
-            success: false,
-            message: "Invalid credentials"
-        })
-
-        // cooldown feature to wait for otp
-        
-        const cooldownKey = `otp:cooldown:${email}`;
-        const isCooldown = await redis.get(cooldownKey);
-        if (isCooldown) {
-        return res.status(429).json({
-            success: false,
-            message: 'Please wait before requesting another OTP.',
-        });
-        }
-        const otp = Math.floor(100000 + Math.random()*900000).toString();
-
-        await Promise.all([
-         redis.del(`otp:${email}`),
-         redis.set(`email:${otp}`, email, {ex:300}),
-         redis.set(`otp:${email}`, otp, {ex: 300}),
-         redis.set(cooldownKey, '1', { ex: 60 }),])
-
-        // send mail
-        try{
-        const info = await transporter.sendMail({
-            from: `Scan2Attend Admin <${process.env.FAKE_EMAIL}>`,
-            to: user.email,
-            subject: 'Otp from Scan2Attend',
-            html: `<h3>Your OTP: ${otp}</h3><p>Valid for 5 minutes.</p>`
-        });console.log("Email sent:", info.response);
-        console.log("Email 1234 sent:", info);
-        }catch(err){
-            console.error("SendMail error:", err);
-            return res.status(500).json({
-    success: false,
-    message: "Email service failed",
-    error: err.message,
-  });
-        }
-        res.cookie("schema",schema,{
-            httpOnly: true,
-            maxAge: 5*60*1000,
-            sameSite:  isProduction ? "none" : "lax",
-            secure: isProduction
-        })
-        res.status(200).json({
-            success: true,
-            message: "Otp send successfully"
-        })
-    }catch(err){
-        console.error("Send OTP error:", err);
-        res.status(500).json({ message: err.message });
+export async function sendOtp(req, res) {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required"
+      });
     }
+
+    let user = await Student.findOne({ email });
+    let schema = "student";
+
+    if (!user) {
+      user = await College.findOne({ email });
+      schema = "college";
+    }
+
+    if (!user) {
+      user = await Teacher.findOne({ email });
+      schema = "teacher";
+    }
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found with this email"
+      });
+    }
+
+    const cooldownKey = `otp:cooldown:${email}`;
+    const isCooldown = await redis.get(cooldownKey);
+
+    if (isCooldown) {
+      return res.status(429).json({
+        success: false,
+        message: "Please wait before requesting another OTP"
+      });
+    }
+
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await Promise.all([
+      redis.del(`otp:${email}`),
+      redis.set(`otp:${email}`, otp, { ex: 300 }),
+      redis.set(`email:${otp}`, email, { ex: 300 }),
+      redis.set(cooldownKey, "1", { ex: 60 })
+    ]);
+
+    try {
+      const mailResponse = await transporter.sendMail({
+        from: `Scan2Attend <${process.env.FAKE_EMAIL}>`,
+        to: user.email,
+        subject: "Scan2Attend OTP Verification ✔",
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>Your OTP Code</h2>
+            <p style="font-size: 18px;">
+              <strong>${otp}</strong>
+            </p>
+            <p>This OTP will expire in <strong>5 minutes</strong>.</p>
+            <hr/>
+            <p>If you did not request this, please ignore the message.</p>
+          </div>
+        `
+      });
+
+
+    } catch (emailErr) {
+      console.error("Email Sending Error:", emailErr);
+
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP email",
+        error: emailErr.message
+      });
+    }
+
+    res.cookie("schema", schema, {
+      httpOnly: true,
+      maxAge: 5 * 60 * 1000,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `OTP sent to ${email}`
+    });
+
+  } catch (err) {
+    console.error("Send OTP Controller Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message
+    });
+  }
 }
+
 
 
 // verify otp
