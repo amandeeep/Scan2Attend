@@ -11,10 +11,30 @@ import attendanceRouter from './routes/attendance.js';
 
 const PORT = process.env.PORT || 3001;
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://scan2attend.onrender.com"
+];
+
 app.use(cors({
-    origin: ["http://localhost:5173", "https://scan2attend.onrender.com", "http://localhost:3001", "https://scan2attend-backend.onrender.com"],
-    credentials: true
-}))
+  origin: function (origin, callback) {
+    // allow requests with no origin (mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("CORS not allowed for this origin"), false);
+    }
+  },
+  credentials: true,
+}));
+
+// app.use(cors({
+//     origin: ["http://localhost:5173", "https://scan2attend.onrender.com", "http://localhost:3001", "https://scan2attend-backend.onrender.com"],
+//     credentials: true
+// }))
 app.use(cookieParser());
 app.use(express.json());
 app.use('/api/auth',authRoutes);
