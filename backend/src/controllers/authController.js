@@ -254,7 +254,7 @@ export async function onboard(req, res) {
     if (uploadedFile) {
       const uploadedUrl = await uploadOnCloudinary(uploadedFile.path);
 
-      if (!cloudUrl) {
+      if (!uploadedUrl) {
         return res.status(500).json({
           success: false,
           message: "Image upload failed"
