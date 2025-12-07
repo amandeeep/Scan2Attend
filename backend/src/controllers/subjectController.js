@@ -169,7 +169,13 @@ export async function getStudentSubjects (req, res){
                 code: 1,
                 semester: 1,
                 department: 1,
-                studentInfo: { $elemMatch: { department: department } },
+                studentInfo: 1,
+            });
+            subjects = subjects.map(sub => {
+             return {
+              ...sub.toObject(),
+              studentInfo: sub.studentInfo.filter(stu => stu.department === department)
+              }
             });
             if(subjects.length <= 0) return res.status(400).json({
               success: false,

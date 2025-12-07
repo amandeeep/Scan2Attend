@@ -227,7 +227,7 @@ const AddSubNEnrollStud = () => {
                                     <div className="card-actions justify-end pt-4 mt-auto">
                                         <button 
                                             type="submit" 
-                                            className={`btn btn-primary w-full sm:w-auto text-sm sm:text-base ${loading ? 'loading' : ''}`}
+                                            className={`btn btn-primary w-full sm:w-auto text-sm sm:text-base `}
                                             disabled={loading}
                                         >
                                             {loading ? (
@@ -310,7 +310,7 @@ const AddSubNEnrollStud = () => {
                                     <div className="card-actions justify-end pt-4 mt-auto">
                                         <button 
                                             type="submit" 
-                                            className={`btn btn-success w-full sm:w-auto text-sm sm:text-base ${loading ? 'loading' : ''}`}
+                                            className={`btn btn-success w-full sm:w-auto text-sm sm:text-base `}
                                             disabled={loading || enrollStud.studentIds.length === 0}
                                         >
                                             {loading ? (
