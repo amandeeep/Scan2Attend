@@ -106,17 +106,16 @@ const TeacherOnboard = () => {
 
       const formData = new FormData();
       Object.entries(formState).forEach(([key, val]) => {
-        if (key !== "profilePic") formData.append(key, val);
+        formData.append(key, val);
       });
-
-      formData.append("isOnboard", true);
 
       if (selectedFile) {
         formData.append("profilePic", selectedFile);
-      }else{
-        formData.append("profilePic", formState.profilePic);
       }
 
+      formData.append("isOnboard", true);
+
+      
       const res = await onboard(formData);
 
       dispatch(addUser(res.user));
