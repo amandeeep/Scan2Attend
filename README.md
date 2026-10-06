@@ -237,6 +237,3 @@ The frontend runs at **http://localhost:5173**.
 
 ---
 
-## 📄 License
-
-This project is licensed under the [ISC License](https://opensource.org/licenses/ISC).
