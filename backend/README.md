@@ -286,6 +286,4 @@ Credentials (`cookies`) are enabled for cross-origin auth.
 
 ---
 
-## 📄 License
 
-[ISC](https://opensource.org/licenses/ISC)
