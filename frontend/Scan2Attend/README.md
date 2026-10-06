@@ -234,7 +234,3 @@ All slices load initial state from `localStorage` on app boot via `loadAuth()` a
 **Amandeep Singh**
 
 ---
-
-## 📄 License
-
-[ISC](https://opensource.org/licenses/ISC)
